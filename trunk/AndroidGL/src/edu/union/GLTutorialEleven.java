@@ -1,26 +1,21 @@
 package edu.union;
 
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 
 import javax.microedition.khronos.opengles.GL10;
-import javax.microedition.khronos.opengles.GL11;
 
 import android.content.Context;
 import android.graphics.Canvas;
-import android.graphics.OpenGLContext;
 import android.opengl.GLU;
 import android.view.KeyEvent;
-import android.view.View;
 
-public class GLTutorialEleven extends View {
-	private OpenGLContext glContext;
+public class GLTutorialEleven extends GLTutorialBase {
 	float y = 1.5f;
 	
 	float lightAmbient[] = new float[] { 0.2f, 0.3f, 0.6f, 1.0f };
 	float lightDiffuse[] = new float[] { 0.6f, 0.6f, 0.6f, 1.0f };
-
+	float[] lightPos = new float[] {0,0,3,1};
+	
 	float matAmbient[] = new float[] { 0.6f, 0.6f, 0.6f, 1.0f };
 	float matDiffuse[] = new float[] { 0.6f, 0.6f, 0.6f, 1.0f };
 	
@@ -71,21 +66,10 @@ public class GLTutorialEleven extends View {
 	FloatBuffer cubeBuff;
 	FloatBuffer floorBuff;
 	
-	protected FloatBuffer makeFloatBuffer(float[] arr) {
-		ByteBuffer bb = ByteBuffer.allocateDirect(arr.length*4);
-		bb.order(ByteOrder.nativeOrder());
-		FloatBuffer fb = bb.asFloatBuffer();
-		fb.put(arr);
-		fb.position(0);
-		return fb;
-	}
-	
-	float[] pos = new float[] {0,0,3,0};
-	
 	public GLTutorialEleven(Context c) {
-		super(c);
-		glContext = new OpenGLContext(OpenGLContext.DEPTH_BUFFER);
-		GL11 gl = (GL11)glContext.getGL();
+		super(c, 20);
+
+		GL10 gl = (GL10)glContext.getGL();
 		
 		gl.glEnable(GL10.GL_LIGHTING);
 		gl.glEnable(GL10.GL_LIGHT0);
@@ -94,7 +78,7 @@ public class GLTutorialEleven extends View {
 		
 		gl.glLightfv(GL10.GL_LIGHT0, GL10.GL_AMBIENT, lightAmbient,	0);
 		gl.glLightfv(GL10.GL_LIGHT0, GL10.GL_DIFFUSE, lightDiffuse,	0);
-		gl.glLightfv(GL10.GL_LIGHT0, GL10.GL_POSITION, pos, 0);
+		gl.glLightfv(GL10.GL_LIGHT0, GL10.GL_POSITION, lightPos, 0);
 		gl.glEnable(GL10.GL_DEPTH_TEST);
 		gl.glDepthFunc(GL10.GL_LEQUAL);
 		
@@ -119,7 +103,7 @@ public class GLTutorialEleven extends View {
 	float yrot = 0.0f;
 	
 	protected void onDraw(Canvas canvas) {
-		GL11 gl = (GL11)glContext.getGL();
+		GL10 gl = (GL10)glContext.getGL();
 		int w = getWidth();
 		int h = getHeight();
 		
@@ -159,12 +143,12 @@ public class GLTutorialEleven extends View {
 		
 		gl.glPushMatrix();
 		gl.glScalef(1.0f, -1f, 1f);
-		gl.glLightfv(GL10.GL_LIGHT0, GL10.GL_POSITION, pos, 0);
+		gl.glLightfv(GL10.GL_LIGHT0, GL10.GL_POSITION, lightPos, 0);
 		gl.glCullFace(GL10.GL_FRONT);
 		drawCube(gl);
 		gl.glCullFace(GL10.GL_BACK);
 		gl.glPopMatrix();
-		gl.glLightfv(GL10.GL_LIGHT0, GL10.GL_POSITION, pos, 0);
+		gl.glLightfv(GL10.GL_LIGHT0, GL10.GL_POSITION, lightPos, 0);
 		
 		gl.glDisable(GL10.GL_STENCIL_TEST);
 		
@@ -181,14 +165,17 @@ public class GLTutorialEleven extends View {
 		
 		drawCube(gl);
 		
+		xrot+=1.0f;
+		yrot+=0.5f;
+		
 		glContext.waitGL();
 	}
 	
 	protected void drawCube(GL10 gl) {
 		gl.glPushMatrix();
 		gl.glTranslatef(0.0f,y,-1.0f);
-		gl.glRotatef(30.0f, 1, 0, 0);
-		gl.glRotatef(40.0f, 0, 1, 0);
+		gl.glRotatef(xrot, 1, 0, 0);
+		gl.glRotatef(yrot, 0, 1, 0);
 	
 		gl.glVertexPointer(3, GL10.GL_FLOAT, 0, cubeBuff);
 
@@ -214,7 +201,6 @@ public class GLTutorialEleven extends View {
 	
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
-		GL10 gl = (GL10)glContext.getGL();
 		if (event.getKeyCode() == KeyEvent.KEYCODE_DPAD_UP) {
 			y+=0.1;
 			invalidate();

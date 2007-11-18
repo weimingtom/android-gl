@@ -1,7 +1,5 @@
 package edu.union;
 
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 
 import javax.microedition.khronos.opengles.GL10;
@@ -9,16 +7,13 @@ import javax.microedition.khronos.opengles.GL11;
 
 import android.content.Context;
 import android.graphics.Canvas;
-import android.graphics.OpenGLContext;
 import android.opengl.GLU;
-import android.view.View;
 
-public class GLTutorialSeven extends View {
-	private OpenGLContext glContext;
-	
+public class GLTutorialSeven extends GLTutorialBase {
 	float lightAmbient[] = new float[] { 0.2f, 0.3f, 0.6f, 1.0f };
 	float lightDiffuse[] = new float[] { 0.2f, 0.3f, 0.6f, 1.0f };
-
+	float[] lightPos = new float[] {0,0,3,1};
+	
 	float matAmbient[] = new float[] { 0.6f, 0.6f, 0.6f, 1.0f };
 	float matDiffuse[] = new float[] { 0.6f, 0.6f, 0.6f, 1.0f };
 	
@@ -90,21 +85,10 @@ public class GLTutorialSeven extends View {
 
 	FloatBuffer cubeBuff;
 	FloatBuffer normBuff;
-	
-	protected FloatBuffer makeFloatBuffer(float[] arr) {
-		ByteBuffer bb = ByteBuffer.allocateDirect(arr.length*4);
-		bb.order(ByteOrder.nativeOrder());
-		FloatBuffer fb = bb.asFloatBuffer();
-		fb.put(arr);
-		fb.position(0);
-		return fb;
-	}
-	
-	float[] pos = new float[] {0,0,3,0};
-	
+		
 	public GLTutorialSeven(Context c) {
-		super(c);
-		glContext = new OpenGLContext(OpenGLContext.DEPTH_BUFFER);
+		super(c, 20);
+		
 		GL11 gl = (GL11)glContext.getGL();
 		
 		gl.glEnable(GL10.GL_LIGHTING);
@@ -114,7 +98,8 @@ public class GLTutorialSeven extends View {
 		
 		gl.glLightfv(GL10.GL_LIGHT0, GL10.GL_AMBIENT, lightAmbient,	0);
 		gl.glLightfv(GL10.GL_LIGHT0, GL10.GL_DIFFUSE, lightDiffuse,	0);
-		gl.glLightfv(GL10.GL_LIGHT0, GL10.GL_POSITION, pos, 0);
+		gl.glLightfv(GL10.GL_LIGHT0, GL10.GL_POSITION, lightPos, 0);
+		
 		gl.glEnable(GL10.GL_DEPTH_TEST);
 		gl.glDepthFunc(GL10.GL_LEQUAL);
 		
@@ -133,7 +118,7 @@ public class GLTutorialSeven extends View {
 		gl.glShadeModel(GL10.GL_SMOOTH);
 		
 	}
-	
+
 	float xrot = 0.0f;
 	float yrot = 0.0f;
 	
@@ -155,8 +140,8 @@ public class GLTutorialSeven extends View {
 		gl.glLoadIdentity();
 		GLU.gluLookAt(gl, 0, 0, 3, 0, 0, 0, 0, 1, 0);
 	
-		gl.glRotatef(30.0f, 1, 0, 0);
-		gl.glRotatef(40.0f, 0, 1, 0);
+		gl.glRotatef(xrot, 1, 0, 0);
+		gl.glRotatef(yrot, 0, 1, 0);
 	
 		gl.glColor4f(1.0f, 0, 0, 1.0f);
 		gl.glDrawArrays(GL10.GL_TRIANGLE_STRIP, 0, 4);
@@ -170,6 +155,9 @@ public class GLTutorialSeven extends View {
 		gl.glDrawArrays(GL10.GL_TRIANGLE_STRIP, 16, 4);
 		gl.glDrawArrays(GL10.GL_TRIANGLE_STRIP, 20, 4);
 	
+		xrot += 1.0f;
+		yrot += 0.5f;
+		
 		glContext.waitGL();
 	}
 }

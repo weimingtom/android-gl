@@ -9,12 +9,18 @@ public class ViewAnimator extends Handler {
 	boolean running;
 	View view;
 	long nextTime;
+	int diff;
 	
 	public static final int NEXT = 0;
 	
 	public ViewAnimator(View view) {
+		this(view, -1);
+	}
+	
+	public ViewAnimator(View view, int fps) {
 		running = false;
 		this.view = view;
+		this.diff = 1000/fps;
 	}
 	
 	public void start() {
@@ -35,10 +41,10 @@ public class ViewAnimator extends Handler {
 			msg = obtainMessage(NEXT);
 			long current = SystemClock.uptimeMillis();
 			if (nextTime < current) {
-				nextTime = current + 20;
+				nextTime = current + diff;
 			}
 			sendMessageAtTime(msg, nextTime);
-			nextTime += 20;
+			nextTime += diff;
 		}
 	}
 }

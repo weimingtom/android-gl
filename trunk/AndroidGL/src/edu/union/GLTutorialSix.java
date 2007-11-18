@@ -1,20 +1,14 @@
 package edu.union;
 
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 
 import javax.microedition.khronos.opengles.GL10;
 
 import android.content.Context;
 import android.graphics.Canvas;
-import android.graphics.OpenGLContext;
 import android.opengl.GLU;
-import android.view.View;
 
-public class GLTutorialSix extends View {
-	private OpenGLContext glContext;
-	
+public class GLTutorialSix extends GLTutorialBase {
 	float box[] = new float[] {
 			// FRONT
 			-0.5f, -0.5f,  0.5f,
@@ -50,18 +44,12 @@ public class GLTutorialSix extends View {
 
 	FloatBuffer cubeBuff;
 	
-	protected FloatBuffer makeFloatBuffer(float[] arr) {
-		ByteBuffer bb = ByteBuffer.allocateDirect(arr.length*4);
-		bb.order(ByteOrder.nativeOrder());
-		FloatBuffer fb = bb.asFloatBuffer();
-		fb.put(arr);
-		fb.position(0);
-		return fb;
-	}
+	float xrot = 0.0f;
+	float yrot = 0.0f;
 	
 	public GLTutorialSix(Context c) {
-		super(c);
-		glContext = new OpenGLContext(OpenGLContext.DEPTH_BUFFER);
+		super(c, 20);
+	
 		GL10 gl = (GL10)glContext.getGL();
 		
 		gl.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
@@ -73,10 +61,7 @@ public class GLTutorialSix extends View {
 		gl.glDepthFunc(GL10.GL_LEQUAL);
 		gl.glClearDepthf(1.0f);
 	}
-	
-	float xrot = 0.0f;
-	float yrot = 0.0f;
-	
+		
 	protected void onDraw(Canvas canvas) {
 		GL10 gl = (GL10)glContext.getGL();
 		int w = getWidth();
@@ -100,8 +85,8 @@ public class GLTutorialSix extends View {
  		gl.glVertexPointer(3, GL10.GL_FLOAT, 0, cubeBuff);
 		gl.glEnableClientState(GL10.GL_VERTEX_ARRAY);
 	
-		gl.glRotatef(45.0f, 1, 0, 0);
-		gl.glRotatef(45.0f, 0, 1, 0);
+		gl.glRotatef(xrot, 1, 0, 0);
+		gl.glRotatef(yrot, 0, 1, 0);
 	
 		gl.glColor4f(1.0f, 0, 0, 1.0f);
 		gl.glDrawArrays(GL10.GL_TRIANGLE_STRIP, 0, 4);
@@ -115,6 +100,9 @@ public class GLTutorialSix extends View {
 		gl.glDrawArrays(GL10.GL_TRIANGLE_STRIP, 16, 4);
 		gl.glDrawArrays(GL10.GL_TRIANGLE_STRIP, 20, 4);
 	
+		xrot += 1.0f;
+		yrot += 0.5f;
+		
 		glContext.waitGL();
 	}
 }

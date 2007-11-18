@@ -1,41 +1,31 @@
 package edu.union;
 
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 
 import javax.microedition.khronos.opengles.GL10;
 
 import android.content.Context;
 import android.graphics.Canvas;
-import android.graphics.OpenGLContext;
 import android.opengl.GLU;
-import android.view.SurfaceHolder;
-import android.view.View;
 
-public class GLTutorialTwo extends View { 
-	private OpenGLContext glContext;
-	
+public class GLTutorialTwo extends GLTutorialBase { 
+	// Coordinates for a 2D square
 	float[] square = new float[] { 	0.25f, 0.25f, 0.0f,
 									0.75f, 0.25f, 0.0f,
 									0.25f, 0.75f, 0.0f,
 									0.75f, 0.75f, 0.0f };
-	
+	// NIO Buffer for the square
 	FloatBuffer squareBuff;
 	
 	public GLTutorialTwo(Context c) {
 		super(c);
-		glContext = new OpenGLContext(0);
+
 		GL10 gl = (GL10)glContext.getGL();
 		
 		gl.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		
-		ByteBuffer bb = ByteBuffer.allocateDirect(square.length*4);
-		bb.order(ByteOrder.nativeOrder());
-		squareBuff = bb.asFloatBuffer();
-		squareBuff.put(square);
-		squareBuff.position(0);
-				
+		squareBuff = makeFloatBuffer(square);
+		
 		gl.glMatrixMode(GL10.GL_PROJECTION);
 		gl.glLoadIdentity();
 		GLU.gluOrtho2D(gl, 0.0f,1.2f,0.0f,1.0f);
