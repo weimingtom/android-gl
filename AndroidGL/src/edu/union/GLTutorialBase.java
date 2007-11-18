@@ -16,6 +16,11 @@ public class GLTutorialBase extends View {
 	protected OpenGLContext glContext;
 	protected ViewAnimator animator;
 	
+	/**
+	 * Make a direct NIO FloatBuffer from an array of floats
+	 * @param arr The array
+	 * @return The newly created FloatBuffer
+	 */
 	protected static FloatBuffer makeFloatBuffer(float[] arr) {
 		ByteBuffer bb = ByteBuffer.allocateDirect(arr.length*4);
 		bb.order(ByteOrder.nativeOrder());
@@ -24,7 +29,12 @@ public class GLTutorialBase extends View {
 		fb.position(0);
 		return fb;
 	}
-	
+
+	/**
+	 * Make a direct NIO IntBuffer from an array of ints
+	 * @param arr The array
+	 * @return The newly created IntBuffer
+	 */
 	protected static IntBuffer makeFloatBuffer(int[] arr) {
 		ByteBuffer bb = ByteBuffer.allocateDirect(arr.length*4);
 		bb.order(ByteOrder.nativeOrder());
@@ -34,6 +44,12 @@ public class GLTutorialBase extends View {
 		return ib;
 	}
 	
+	/**
+	 * Create a texture and send it to the graphics system
+	 * @param gl The GL object
+	 * @param bmp The bitmap of the texture
+	 * @return The newly created identifier for the texture.
+	 */
 	protected static int loadTexture(GL10 gl, Bitmap bmp) {
 		ByteBuffer bb = ByteBuffer.allocateDirect(bmp.height()*bmp.width()*4);
 		bb.order(ByteOrder.nativeOrder());
@@ -58,10 +74,19 @@ public class GLTutorialBase extends View {
 		return tex;
 	}
 	
+	/**
+	 * Constructor
+	 * @param c The View's context.
+	 */
 	public GLTutorialBase(Context c) {
 		this(c, -1);
 	}
 	
+	/**
+	 * Constructor for animated views
+	 * @param c The View's context
+	 * @param fps The frames per second for the animation.
+	 */
 	public GLTutorialBase(Context c, int fps) {
 		super(c);
 		glContext = new OpenGLContext(OpenGLContext.DEPTH_BUFFER);
@@ -73,6 +98,7 @@ public class GLTutorialBase extends View {
 	@Override
 	protected void onAttachedToWindow() {
 		if (animator != null) {
+			// If we're animated, start the animation
 			animator.start();
 		}
 		super.onAttachedToWindow();
@@ -81,6 +107,7 @@ public class GLTutorialBase extends View {
 	@Override
 	protected void onDetachedFromWindow() {
 		if (animator != null) {
+			// If we're animated, stop the animation
 			animator.stop();
 		}
 		super.onDetachedFromWindow();

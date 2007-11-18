@@ -9,6 +9,11 @@ import android.graphics.Canvas;
 import android.opengl.GLU;
 import android.view.KeyEvent;
 
+/**
+ * Approximately corresponds to: http://www.zeuscmd.com/tutorials/opengles/25-Reflections.php
+ * @author bburns
+ *
+ */
 public class GLTutorialEleven extends GLTutorialBase {
 	float y = 1.5f;
 	
@@ -120,7 +125,7 @@ public class GLTutorialEleven extends GLTutorialBase {
 		gl.glLoadIdentity();
 		GLU.gluLookAt(gl, 0, 3, 7, 0, 0, 0, 0, 1, 0);
 		
-
+		// Draw the floor into the stencil buffer.
 		gl.glDisable(GL10.GL_DEPTH_TEST);
 		gl.glColorMask(false, false, false, false);
 		gl.glDepthMask(false);
@@ -135,6 +140,7 @@ public class GLTutorialEleven extends GLTutorialBase {
 		gl.glNormal3f(0,1,0);
 		gl.glDrawArrays(GL10.GL_TRIANGLE_STRIP, 0, 4);
 		
+		// Draw the reflection
 		gl.glColorMask(true, true, true, true);
 		gl.glDepthMask(true);
 		gl.glEnable(GL10.GL_DEPTH_TEST);
@@ -152,6 +158,7 @@ public class GLTutorialEleven extends GLTutorialBase {
 		
 		gl.glDisable(GL10.GL_STENCIL_TEST);
 		
+		// Draw the floor for real.
 		gl.glEnable(GL10.GL_BLEND);
 		gl.glBlendFunc(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
 		
@@ -163,6 +170,7 @@ public class GLTutorialEleven extends GLTutorialBase {
 		
 		gl.glDisable(GL10.GL_BLEND);
 		
+		// Draw the non-reflected cube
 		drawCube(gl);
 		
 		xrot+=1.0f;

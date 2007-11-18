@@ -5,6 +5,10 @@ import javax.microedition.khronos.opengles.GL10;
 import android.content.Context;
 import android.graphics.Canvas;
 
+/**
+ * http://www.zeuscmd.com/tutorials/opengles/06-Rendering.php
+ * @author bburns
+ */
 public class GLTutorialOne extends GLTutorialBase {
 	public GLTutorialOne(Context c) {
 		super(c);

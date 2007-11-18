@@ -8,6 +8,10 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.opengl.GLU;
 
+/**
+ * http://www.zeuscmd.com/tutorials/opengles/07-OrthographicProjection.php
+ * @author bburns
+ */
 public class GLTutorialTwo extends GLTutorialBase { 
 	// Coordinates for a 2D square
 	float[] square = new float[] { 	0.25f, 0.25f, 0.0f,
