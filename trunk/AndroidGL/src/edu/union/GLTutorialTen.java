@@ -13,6 +13,11 @@ import android.graphics.OpenGLContext;
 import android.opengl.GLU;
 import android.view.KeyEvent;
 
+/**
+ * Approximately corresponds to: http://www.zeuscmd.com/tutorials/opengles/22-Fog.php
+ * @author bburns
+ *
+ */
 public class GLTutorialTen extends GLTutorialBase {
 	float[] lightPos = new float[] {0,0,3,1};
 	float lightAmbient[] = new float[] { 0.2f, 0.3f, 0.6f, 1.0f };

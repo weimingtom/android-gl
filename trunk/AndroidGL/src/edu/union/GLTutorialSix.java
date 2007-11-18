@@ -8,6 +8,10 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.opengl.GLU;
 
+/**
+ * http://www.zeuscmd.com/tutorials/opengles/13-SolidShapes.php
+ * @author bburns
+ */
 public class GLTutorialSix extends GLTutorialBase {
 	float box[] = new float[] {
 			// FRONT

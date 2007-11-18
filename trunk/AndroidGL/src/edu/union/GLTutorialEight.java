@@ -11,6 +11,11 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.opengl.GLU;
 
+/**
+ * http://www.zeuscmd.com/tutorials/opengles/17-TextureMapping.php
+ * @author bburns
+ *
+ */
 public class GLTutorialEight extends GLTutorialBase {
 	float lightAmbient[] = new float[] { 0.2f, 0.3f, 0.6f, 1.0f };
 	float lightDiffuse[] = new float[] { 0.2f, 0.3f, 0.6f, 1.0f };

@@ -8,6 +8,10 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.opengl.GLU;
 
+/**
+ * http://www.zeuscmd.com/tutorials/opengles/08-ColorAndShading.php
+ * @author bburns
+ */
 public class GLTutorialThree extends GLTutorialBase {	
 	// Vertices (x,y,z) for a 2D triangle
 	float[] triangle = new float[] { 0.25f, 0.25f, 0.0f,

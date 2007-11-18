@@ -8,6 +8,10 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.opengl.GLU;
 
+/**
+ * http://www.zeuscmd.com/tutorials/opengles/10-Transformations.php
+ * @author bburns
+ */
 public class GLTutorialFour extends GLTutorialBase {
 	float[] triangle = new float[] { -0.25f, -0.25f, 0.0f,
 									  0.25f, -0.25f, 0.0f,
