@@ -1,43 +1,31 @@
 package edu.union;
 
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 
 import javax.microedition.khronos.opengles.GL10;
 
 import android.content.Context;
 import android.graphics.Canvas;
-import android.graphics.OpenGLContext;
 import android.opengl.GLU;
-import android.view.View;
 
-public class GLTutorialThree extends View {
-	private OpenGLContext glContext;
-	
+public class GLTutorialThree extends GLTutorialBase {	
+	// Vertices (x,y,z) for a 2D triangle
 	float[] triangle = new float[] { 0.25f, 0.25f, 0.0f,
 									 0.75f, 0.25f, 0.0f,
 									 0.25f, 0.75f, 0.0f };
 	
+	// Colors (r,g,b,a) for each vertex
 	float[] colors = new float[] { 	1, 0, 0, 1,
 									0, 1, 0, 1,
 									0, 0, 1, 1 };
 	
+	// NIO Buffers for each.
 	FloatBuffer triangleBuff;
 	FloatBuffer colorBuff;
 	
-	protected FloatBuffer makeFloatBuffer(float[] arr) {
-		ByteBuffer bb = ByteBuffer.allocateDirect(arr.length*4);
-		bb.order(ByteOrder.nativeOrder());
-		FloatBuffer fb = bb.asFloatBuffer();
-		fb.put(arr);
-		fb.position(0);
-		return fb;
-	}
-	
 	public GLTutorialThree(Context c) {
 		super(c);
-		glContext = new OpenGLContext(0);
+		
 		GL10 gl = (GL10)glContext.getGL();
 		
 		gl.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
@@ -48,9 +36,11 @@ public class GLTutorialThree extends View {
 		triangleBuff = makeFloatBuffer(triangle);
 		colorBuff = makeFloatBuffer(colors);
 		
+		// Send the vertices to the renderer
 		gl.glVertexPointer(3, GL10.GL_FLOAT, 0, triangleBuff);
 		gl.glEnableClientState(GL10.GL_VERTEX_ARRAY);
 	
+		// Send the colors to the renderer
 		gl.glColorPointer(4, GL10.GL_FLOAT, 0, colorBuff);
 		gl.glEnableClientState(GL10.GL_COLOR_ARRAY);
 	

@@ -1,19 +1,14 @@
 package edu.union;
 
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 
 import javax.microedition.khronos.opengles.GL10;
 
 import android.content.Context;
 import android.graphics.Canvas;
-import android.graphics.OpenGLContext;
 import android.opengl.GLU;
-import android.view.View;
 
-public class GLTutorialFive extends View {
-	private OpenGLContext glContext;
+public class GLTutorialFive extends GLTutorialBase {
 	
 	float[] triangle = new float[] { 0.25f, 0.25f, 0.0f,
 									 0.75f, 0.25f, 0.0f,
@@ -26,18 +21,8 @@ public class GLTutorialFive extends View {
 	FloatBuffer triangleBuff;
 	FloatBuffer colorBuff;
 	
-	protected FloatBuffer makeFloatBuffer(float[] arr) {
-		ByteBuffer bb = ByteBuffer.allocateDirect(arr.length*4);
-		bb.order(ByteOrder.nativeOrder());
-		FloatBuffer fb = bb.asFloatBuffer();
-		fb.put(arr);
-		fb.position(0);
-		return fb;
-	}
-	
 	public GLTutorialFive(Context c) {
 		super(c);
-		glContext = new OpenGLContext(OpenGLContext.DEPTH_BUFFER);
 		GL10 gl = (GL10)glContext.getGL();
 		
 		gl.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);

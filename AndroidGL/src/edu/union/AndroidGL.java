@@ -1,14 +1,10 @@
 package edu.union;
 
-import javax.microedition.khronos.opengles.GL10;
-
 import android.app.Activity;
 import android.content.Intent;
-import android.graphics.OpenGLContext;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.Menu.Item;
-import android.widget.TextView;
 
 public class AndroidGL extends Activity {
 	public static final int FIRST_ID = Menu.FIRST;

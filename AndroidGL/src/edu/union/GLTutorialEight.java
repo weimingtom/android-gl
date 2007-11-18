@@ -1,9 +1,6 @@
 package edu.union;
 
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
 
 import javax.microedition.khronos.opengles.GL10;
 import javax.microedition.khronos.opengles.GL11;
@@ -12,16 +9,13 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
-import android.graphics.OpenGLContext;
 import android.opengl.GLU;
-import android.view.View;
 
-public class GLTutorialEight extends View {
-	private OpenGLContext glContext;
-	
+public class GLTutorialEight extends GLTutorialBase {
 	float lightAmbient[] = new float[] { 0.2f, 0.3f, 0.6f, 1.0f };
 	float lightDiffuse[] = new float[] { 0.2f, 0.3f, 0.6f, 1.0f };
-
+	float[] lightPos = new float[] {0,0,3,1};
+	
 	float matAmbient[] = new float[] { 0.6f, 0.6f, 0.6f, 1.0f };
 	float matDiffuse[] = new float[] { 0.6f, 0.6f, 0.6f, 1.0f };
 	
@@ -97,46 +91,11 @@ public class GLTutorialEight extends View {
 	FloatBuffer cubeBuff;
 	FloatBuffer texBuff;
 	
-	protected FloatBuffer makeFloatBuffer(float[] arr) {
-		ByteBuffer bb = ByteBuffer.allocateDirect(arr.length*4);
-		bb.order(ByteOrder.nativeOrder());
-		FloatBuffer fb = bb.asFloatBuffer();
-		fb.put(arr);
-		fb.position(0);
-		return fb;
-	}
-	
-	float[] pos = new float[] {0,0,3,0};
-	
-	public int loadTexture(GL10 gl, Context c, Bitmap bmp) {
-		ByteBuffer bb = ByteBuffer.allocateDirect(bmp.height()*bmp.width()*4);
-		bb.order(ByteOrder.nativeOrder());
-		IntBuffer ib = bb.asIntBuffer();
-		
-		for (int y=0;y<bmp.height();y++)
-			for (int x=0;x<bmp.width();x++) {
-					ib.put(bmp.getPixel(x,y));
-			}
-		ib.position(0);
-		bb.position(0);
-		
-		int[] tmp_tex = new int[1];
-		
-		gl.glGenTextures(1, tmp_tex, 0);
-		int tex = tmp_tex[0];
-		gl.glBindTexture(GL10.GL_TEXTURE_2D, this.tex);
-		gl.glTexImage2D(GL10.GL_TEXTURE_2D, 0, GL10.GL_RGBA, bmp.width(), bmp.height(), 0, GL10.GL_RGBA, GL10.GL_UNSIGNED_BYTE, bb);
-		gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MIN_FILTER, GL10.GL_LINEAR);
-		gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MAG_FILTER, GL10.GL_LINEAR);
-	
-		return tex;
-	}
 	
 	public GLTutorialEight(Context c) {
-		super(c);
+		super(c, 20);
 		bmp = BitmapFactory.decodeResource(c.getResources(), R.drawable.zeus);
 		
-		glContext = new OpenGLContext(OpenGLContext.DEPTH_BUFFER);
 		GL11 gl = (GL11)glContext.getGL();
 		
 		gl.glEnable(GL10.GL_LIGHTING);
@@ -146,7 +105,8 @@ public class GLTutorialEight extends View {
 		
 		gl.glLightfv(GL10.GL_LIGHT0, GL10.GL_AMBIENT, lightAmbient,	0);
 		gl.glLightfv(GL10.GL_LIGHT0, GL10.GL_DIFFUSE, lightDiffuse,	0);
-		gl.glLightfv(GL10.GL_LIGHT0, GL10.GL_POSITION, pos, 0);
+		gl.glLightfv(GL10.GL_LIGHT0, GL10.GL_POSITION, lightPos, 0);
+		
 		gl.glEnable(GL10.GL_DEPTH_TEST);
 		gl.glDepthFunc(GL10.GL_LEQUAL);
 		
@@ -166,7 +126,7 @@ public class GLTutorialEight extends View {
 		gl.glEnable(GL10.GL_CULL_FACE);
 		gl.glShadeModel(GL10.GL_SMOOTH);	
 	
-		tex = loadTexture(gl, c, bmp);
+		tex = loadTexture(gl, bmp);
 	}
 	
 	float xrot = 0.0f;
@@ -190,8 +150,8 @@ public class GLTutorialEight extends View {
 		gl.glLoadIdentity();
 		GLU.gluLookAt(gl, 0, 0, 3, 0, 0, 0, 0, 1, 0);
 	
-		gl.glRotatef(30.0f, 1, 0, 0);
-		gl.glRotatef(40.0f, 0, 1, 0);
+		gl.glRotatef(xrot, 1, 0, 0);
+		gl.glRotatef(yrot, 0, 1, 0);
 	
 		gl.glColor4f(1.0f, 1, 1, 1.0f);
 		gl.glNormal3f(0,0,1);
@@ -211,6 +171,9 @@ public class GLTutorialEight extends View {
 		gl.glNormal3f(0,-1,0);
 		gl.glDrawArrays(GL10.GL_TRIANGLE_STRIP, 20, 4);
 	
+		xrot += 1.0f;
+		yrot += 0.5f;
+		
 		glContext.waitGL();
 	}
 }
