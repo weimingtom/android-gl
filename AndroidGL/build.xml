@@ -51,6 +51,10 @@
     <!-- Generate the R.java file for this project's resources. -->
     <target name="resource-src" depends="dirs">
         <echo>Generating R.java...</echo>
+    	<!-- Remove the past R.java -->
+    	<delete> 
+    		<fileset dir="${outdir-r}" includes="**/R.java"/>    		
+    	</delete>
         <exec executable="${aapt}" failonerror="true">
             <arg value="compile" />
             <arg value="-m" />
