@@ -1,9 +1,14 @@
 <?xml version="1.0" ?>
 <project name="AndroidGL" default="package">
-	<!-- Override this with the location of your ANDROID SDK -->
+
 	<property environment="env"/>
-    <property name="sdk-folder" value="${env.ANDROID_HOME}" />
-    <property name="android-tools" value="${sdk-folder}\tools" />
+	<!-- Provide a System environment variable ANDROID_HOME
+	     or override sdk-folder (e.g. ant -Dsdk-folder=C:\LOCATION_ANDROID_SDK) 
+	-->
+	<!-- sdk-folder must validate to a real location otherwise build will fail -->
+	
+	<property name="sdk-folder" location="${env.ANDROID_HOME}" />
+    <property name="android-tools" location="${sdk-folder}\tools" />
 
     <!-- The intermediates directory -->
     <!-- Eclipse uses "bin" for its own output, so we do the same. -->
@@ -40,6 +45,29 @@
 
 	</path>
 
+	<!-- Build initialization work -->
+	
+	<target name="init" depends="check-sdk-environment">
+		<description>
+		This target takes care of any build initialization tasks that need to occur.
+		</description>
+	</target>
+	
+	<target name="check-sdk-environment" depends="check-paths"/>
+	
+	<target name="check-paths">
+		<!-- Check if the SDK exists -->
+		<available file="${sdk-folder}" property="sdk-found"/>		
+		<fail unless="sdk-found" 
+			  message="ANDROID SDK not found at [${sdk-folder}] ! Your ANDROID_HOME envrionment variable may not be defined. You can manually define this when calling ANT by using -Dsdk-folder=PATH_TO_ANDROID_SDK"/>
+		<!-- Check if tools exist -->
+		<available file="${android-tools}" property="tools-found"/>		
+		<fail unless="tools-found" 
+  			  message="${android-tools} doesn't exist make sure you have your ANDROID_HOME environment variable set and Android SDK is installed properly."/>
+								
+	</target>
+	
+	
     <!-- Rules -->
 
     <!-- Create the output directories if they don't exist yet. -->
@@ -49,7 +77,7 @@
     </target>
 
     <!-- Generate the R.java file for this project's resources. -->
-    <target name="resource-src" depends="dirs">
+    <target name="resource-src" depends="init, dirs">
         <echo>Generating R.java...</echo>
     	<!-- Remove the past R.java -->
     	<delete> 
@@ -70,7 +98,7 @@
     </target>
 
     <!-- Generate java classes from .aidl files. -->
-    <target name="aidl" depends="dirs">
+    <target name="aidl" depends="init, dirs">
         <apply executable="${aidl}" failonerror="true">
             <fileset dir="${srcdir}">
                 <include name="**/*.aidl"/>
@@ -79,7 +107,7 @@
     </target>
 
     <!-- Compile this project's .java files into .class files. -->
-    <target name="compile" depends="dirs, resource-src, aidl">
+    <target name="compile" depends="init, dirs, resource-src, aidl">
         <javac encoding="ascii" target="1.5" debug="true" extdirs=""
                 srcdir="."
                 destdir="${outdir-classes}"
@@ -88,7 +116,7 @@
     </target>
 
     <!-- Convert this project's .class files into .dex files. -->
-    <target name="dex" depends="compile">
+    <target name="dex" depends="init, compile">
         <exec executable="${dx}" failonerror="true">
             <arg value="--dex" />
             <arg value="--output=${basedir}\${intermediate-dex}" />
@@ -99,7 +127,7 @@
     </target>
 
     <!-- Put the project's resources into the output package file. -->
-    <target name="package-res-and-assets">
+    <target name="package-res-and-assets" depends="init">
         <echo>Packaging resources and assets...</echo>
         <exec executable="${aapt}" failonerror="true">
             <arg value="package" />
@@ -118,7 +146,7 @@
     </target>
 
     <!-- Same as package-res-and-assets, but without "-A ${asset-dir}" -->
-    <target name="package-res-no-assets">
+    <target name="package-res-no-assets" depends="init">
         <echo>Packaging resources...</echo>
         <exec executable="${aapt}" failonerror="true">
             <arg value="package" />
@@ -165,5 +193,5 @@
     </target>
 
     <!-- Create the package file for this project from the sources. -->
-    <target name="package" depends="package-dex" />
+    <target name="package" depends="init, package-dex" />
 </project>
