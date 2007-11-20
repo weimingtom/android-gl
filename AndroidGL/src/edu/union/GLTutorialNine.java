@@ -128,7 +128,7 @@ public class GLTutorialNine extends GLTutorialBase {
 		
 		gl.glShadeModel(GL10.GL_SMOOTH);
 		
-		bmp = BitmapFactory.decodeResource(c.getResources(), R.drawable.zeus);
+		bmp = BitmapFactory.decodeResource(c.getResources(), R.drawable.glass);
 		tex = loadTexture(gl, bmp);
 
 		setFocusable(true);

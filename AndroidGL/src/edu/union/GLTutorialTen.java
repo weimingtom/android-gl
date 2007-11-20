@@ -98,6 +98,7 @@ public class GLTutorialTen extends GLTutorialBase {
 
 	FloatBuffer cubeBuff;
 	FloatBuffer texBuff;
+	FloatBuffer backBuff;
 	
 	public GLTutorialTen(Context c) {
 		super(c, 20);
@@ -107,8 +108,6 @@ public class GLTutorialTen extends GLTutorialBase {
 		
 		gl.glEnable(GL10.GL_LIGHTING);
 		gl.glEnable(GL10.GL_LIGHT0);
-		gl.glMaterialfv(GL10.GL_FRONT_AND_BACK, GL10.GL_AMBIENT, matAmbient, 0);
-		gl.glMaterialfv(GL10.GL_FRONT_AND_BACK, GL10.GL_DIFFUSE, matDiffuse, 0);
 		
 		gl.glLightfv(GL10.GL_LIGHT0, GL10.GL_AMBIENT, lightAmbient,	0);
 		gl.glLightfv(GL10.GL_LIGHT0, GL10.GL_DIFFUSE, lightDiffuse,	0);
@@ -132,7 +131,6 @@ public class GLTutorialTen extends GLTutorialBase {
 		
 		gl.glShadeModel(GL10.GL_SMOOTH);
 		
-
 		Bitmap bmp = BitmapFactory.decodeResource(c.getResources(), R.drawable.block);
 		tex = loadTexture(gl, bmp);
 
@@ -167,23 +165,32 @@ public class GLTutorialTen extends GLTutorialBase {
 		gl.glMatrixMode(GL10.GL_MODELVIEW);
 		gl.glLoadIdentity();
 		GLU.gluLookAt(gl, 0, 0, 3, 0, 0, 0, 0, 1, 0);
+		gl.glPushMatrix();
 		
 		gl.glRotatef(xrot, 1, 0, 0);
 		gl.glRotatef(yrot, 0, 1, 0);
-	
-		gl.glColor4f(1.0f, 1, 1, 1.0f);
+
+		gl.glBindTexture(GL10.GL_TEXTURE_2D, tex);
+		gl.glEnable(GL10.GL_TEXTURE_2D);
+		gl.glMaterialfv(GL10.GL_FRONT_AND_BACK, GL10.GL_AMBIENT, matAmbient, 0);
+		gl.glMaterialfv(GL10.GL_FRONT_AND_BACK, GL10.GL_DIFFUSE, matDiffuse, 0);
+		
+		gl.glVertexPointer(3, GL10.GL_FLOAT, 0, cubeBuff);
+		gl.glEnableClientState(GL10.GL_VERTEX_ARRAY);
+		gl.glEnableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
+		gl.glTexCoordPointer(2, GL10.GL_FLOAT, 0, texBuff);
+
+		
 		gl.glNormal3f(0,0,1);
 		gl.glDrawArrays(GL10.GL_TRIANGLE_STRIP, 0, 4);
 		gl.glNormal3f(0,0,-1);
 		gl.glDrawArrays(GL10.GL_TRIANGLE_STRIP, 4, 4);
 	
-		gl.glColor4f(1, 1.0f, 1, 1.0f);
 		gl.glNormal3f(-1,0,0);
 		gl.glDrawArrays(GL10.GL_TRIANGLE_STRIP, 8, 4);
 		gl.glNormal3f(1,0,0);
 		gl.glDrawArrays(GL10.GL_TRIANGLE_STRIP, 12, 4);
 		
-		gl.glColor4f(1, 1, 1.0f, 1.0f);
 		gl.glNormal3f(0,1,0);
 		gl.glDrawArrays(GL10.GL_TRIANGLE_STRIP, 16, 4);
 		gl.glNormal3f(0,-1,0);
