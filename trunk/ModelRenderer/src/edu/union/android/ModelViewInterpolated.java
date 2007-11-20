@@ -14,6 +14,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.OpenGLContext;
 import android.opengl.GLU;
+import android.view.KeyEvent;
 import android.view.View;
 
 public class ModelViewInterpolated extends View {
@@ -23,7 +24,9 @@ public class ModelViewInterpolated extends View {
 
 	int tex;
 	int verts;
-
+	int start_frame;
+	int end_frame;
+	
 	float lightAmbient[] = new float[] { 0.2f, 0.3f, 0.6f, 1.0f };
 	float lightDiffuse[] = new float[] { 1f, 1f, 1f, 1.0f };
 
@@ -67,11 +70,38 @@ public class ModelViewInterpolated extends View {
 		gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MAG_FILTER, GL10.GL_LINEAR);
 		return tx;
 	}
-
+	
+	protected void nextAnimation() {
+		start_frame = end_frame + 1;
+		if (start_frame >= m.getFrameCount())
+			start_frame = 0;
+		getEndFrame();
+	}
+	
+	protected String prefix(String str) {
+		int i;
+		for (i=0;i<str.length();i++) {
+			if (Character.isDigit(str.charAt(i)))
+				break;
+		}
+		return str.substring(0, i);
+	}
+	
+	protected void getEndFrame() {
+		end_frame = start_frame;
+		String label = prefix(m.getFrame(start_frame).getName());
+		do {
+			end_frame++;
+		} while (end_frame < m.getFrameCount() && prefix(m.getFrame(end_frame).getName()).equals(label));
+	}
+	
 	public ModelViewInterpolated(Model m, Context c) {
 		super(c);
 		setFocusable(true);
 		this.m = m;
+		start_frame = 0;
+		getEndFrame();
+		
 		context = new OpenGLContext(OpenGLContext.DEPTH_BUFFER);
 
 		GL10 gl = (GL10)context.getGL();
@@ -149,6 +179,8 @@ public class ModelViewInterpolated extends View {
 		indices.position(0);
 
 		animator = new ViewAnimator(this, 60);
+		
+		setFocusable(true);
 	}
 
 	protected void interpolate(float mix) {
@@ -224,9 +256,23 @@ public class ModelViewInterpolated extends View {
 		mix += 0.25f;
 		if (mix >= 1) {
 			current = next;
-			next = (next+1)%m.getFrameCount();
+			next++;
+			if (next > end_frame)
+				next = start_frame;
 			mix = 0.0f;
 		}
 		context.waitGL();
 	}
+	
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		switch (event.getKeyCode()) {
+		case KeyEvent.KEYCODE_DPAD_RIGHT:
+			nextAnimation();
+			break;
+		}	
+		return super.onKeyDown(keyCode, event);
+	}
+	
+	
 }

@@ -50,7 +50,7 @@ public class MD2Loader {
 		String texture = default_texture;
 
 		// HACK!!! HACK!!! HACK!!!
-		numFrames = 8;
+		numFrames = 100;
 
 		/*
 	  System.out.println(magic);
