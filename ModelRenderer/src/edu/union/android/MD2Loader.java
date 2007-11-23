@@ -2,9 +2,13 @@ package edu.union.android;
 
 import java.io.*;
 
-public class MD2Loader {
-
-	public static Model load(String file, float scale) 
+public class MD2Loader extends AbstractModelLoader {
+	
+	public boolean canLoad(File f) {
+		return (f.getName().endsWith(".md2"));
+	}
+	
+	public Model load(String file, float scale) 
 	throws IOException
 	{
 		File f = new File(file);
@@ -17,14 +21,20 @@ public class MD2Loader {
 		}
 	}
 
-	public static Model load(InputStream in, String default_texture) 
+	public Model load(InputStream in) 
+		throws IOException
+	{
+		return load(in, null);
+	}
+	
+	public Model load(InputStream in, String default_texture) 
 	throws IOException
 	{
 		return load(in, 1.0f, default_texture);
 	}
 
 	@SuppressWarnings("unused")
-	public static Model load(InputStream in, float scale, 
+	public Model load(InputStream in, float scale, 
 			String default_texture) 
 	throws IOException
 	{
@@ -88,8 +98,7 @@ public class MD2Loader {
 		is = new LittleEndianInputStream(bs);
 
 		for (int i=0;i<numFrames;i++) {
-			//Mesh m = new IntBufferMesh(numVertices, numTexCoords, numTriangles);
-			Mesh m = new IntMesh();
+			Mesh m = factory.create(numVertices, numTexCoords, numTriangles);
 			float[] scle = new float[3];
 			scle[0] = is.readFloat();
 			scle[1] = is.readFloat();

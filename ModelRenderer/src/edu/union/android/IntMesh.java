@@ -90,4 +90,20 @@ public class IntMesh extends FixedPointMesh {
 	protected void clearVertices() {
 		vertices.clear();
 	}
+	
+	private static MeshFactory mf = null;
+	
+	public static MeshFactory factory() {
+			if (mf == null) {
+				mf = new MeshFactory() {
+					public Mesh create() {
+						return new IntMesh();
+					}
+					public Mesh create(int v, int t, int f) {
+						return new IntMesh();
+					}
+				};
+			}
+			return mf;
+	}
 }

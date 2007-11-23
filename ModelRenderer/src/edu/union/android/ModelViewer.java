@@ -10,10 +10,12 @@ public class ModelViewer extends Activity {
 	@Override
 	public void onCreate(Bundle icicle) {
 		super.onCreate(icicle);
+		MD2Loader ld = new MD2Loader();
+		ld.setFactory(IntMesh.factory());
 		
 		InputStream is = getResources().openRawResource(R.drawable.tris);
 		try {
-			Model model = MD2Loader.load(is, 0.1f, "skin.jpg");
+			Model model = ld.load(is, 0.1f, "skin.jpg");
 			if (model.getFrameCount() > 1)
 				setContentView(new ModelViewInterpolated(model, this));
 			else
