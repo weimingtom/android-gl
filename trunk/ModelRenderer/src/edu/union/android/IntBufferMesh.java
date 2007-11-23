@@ -12,6 +12,23 @@ public class IntBufferMesh extends FixedPointMesh {
 	IntBuffer face_normals;
 
 	int vertexCount;
+	
+	private static MeshFactory mf = null;
+	
+	public static MeshFactory factory() {
+			if (mf == null) {
+				mf = new MeshFactory() {
+					public Mesh create() {
+						System.err.println("Error, unsupported create method, must use parameters...");
+						return null;
+					}
+					public Mesh create(int v, int t, int f) {
+						return new IntBufferMesh(v, t, f);
+					}
+				};
+			}
+			return mf;
+	}
 
 	public IntBuffer makeIntBuffer(int size) {
 		ByteBuffer bb;

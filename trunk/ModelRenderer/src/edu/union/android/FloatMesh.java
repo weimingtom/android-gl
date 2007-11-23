@@ -421,4 +421,20 @@ public class FloatMesh extends Mesh {
 	protected void clearVertices() {
 		vertices.clear();
 	}
+	
+	private static MeshFactory mf = null;
+	
+	public static MeshFactory factory() {
+			if (mf == null) {
+				mf = new MeshFactory() {
+					public Mesh create() {
+						return new FloatMesh();
+					}
+					public Mesh create(int v, int t, int f) {
+						return new FloatMesh();
+					}
+				};
+			}
+			return mf;
+	}
 }

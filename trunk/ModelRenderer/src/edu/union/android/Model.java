@@ -8,6 +8,16 @@ public class Model {
 	public Model() {
 		this.frames = new Vector<Frame>();
 	}
+	
+	public Model(Mesh m) {
+		this(new Mesh[] {m});
+	}
+	
+	public Model(Mesh[] m) {
+		this();
+		for (int i=0;i<m.length;i++)
+			addFrame(new Frame("frame"+i, m[i]));
+	}
 
 	public Model(Frame[] frames) {
 		this();
