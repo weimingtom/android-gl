@@ -2,6 +2,8 @@ package edu.union.graphics;
 
 // Much of this is adapted from the beartronics FP lib
 public class FixedPointUtils {
+	public static final int ONE = 0x10000;
+	
 	/**
 	 * Convert a float to  16.16 fixed-point representation
 	 * @param val The value to convert
