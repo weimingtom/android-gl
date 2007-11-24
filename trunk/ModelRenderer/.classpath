@@ -6,5 +6,6 @@
 			<attribute name="javadoc_location" value="file:/Users/bburns/Desktop/android_sdk_darwin_m3-rc22a/docs/reference"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="lib/modelloader.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -16,6 +16,8 @@ import android.graphics.OpenGLContext;
 import android.opengl.GLU;
 import android.view.KeyEvent;
 import android.view.View;
+import edu.union.graphics.Model;
+import edu.union.graphics.Mesh;
 
 public class ModelViewInterpolated extends View {
 	private Model m;
