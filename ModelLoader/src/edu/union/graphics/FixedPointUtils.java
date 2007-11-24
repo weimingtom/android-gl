@@ -2,11 +2,11 @@ package edu.union.graphics;
 
 // Much of this is adapted from the beartronics FP lib
 public class FixedPointUtils {
-	protected static int toFixed(float val) {
+	public static int toFixed(float val) {
 		return (int)(val * 65536F);
 	}
 
-	protected static int[] toFixed(float[] arr) {
+	public static int[] toFixed(float[] arr) {
 		int[] res = new int[arr.length];
 		for (int i=0;i<res.length;i++) {
 			res[i] = toFixed(arr[i]);
@@ -14,11 +14,11 @@ public class FixedPointUtils {
 		return res;
 	}
 	
-	protected static float toFloat(int val) {
+	public static float toFloat(int val) {
 		return ((float)val)/65536.0f;
 	}
 	
-	protected static float[] toFloat(int[] arr) {
+	public static float[] toFloat(int[] arr) {
 		float[] res = new float[arr.length];
 		for (int i=0;i<res.length;i++) {
 			res[i] = toFloat(arr[i]);
