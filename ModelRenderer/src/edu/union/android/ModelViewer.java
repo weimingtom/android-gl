@@ -5,6 +5,10 @@ import java.io.InputStream;
 import android.app.Activity;
 import android.os.Bundle;
 
+import edu.union.graphics.Model;
+import edu.union.graphics.MD2Loader;
+import edu.union.graphics.IntMesh;
+
 public class ModelViewer extends Activity {
 	/** Called when the activity is first created. */
 	@Override

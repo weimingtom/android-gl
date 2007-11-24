@@ -17,6 +17,10 @@ import android.opengl.GLU;
 import android.view.KeyEvent;
 import android.view.View;
 
+import edu.union.graphics.Model;
+import edu.union.graphics.Mesh;
+import edu.union.graphics.FixedPointUtils;
+
 public class ModelView extends View {
 	private Model m;
 	private OpenGLContext context;
@@ -63,7 +67,7 @@ public class ModelView extends View {
 		return tx;
 	}
 
-	public ModelView(Model m, Context c) {
+	public ModelView(edu.union.graphics.Model m, Context c) {
 		super(c);
 		setFocusable(true);
 		this.m = m;
