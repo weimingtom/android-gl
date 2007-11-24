@@ -18,6 +18,7 @@ import android.view.KeyEvent;
 import android.view.View;
 import edu.union.graphics.Animation;
 import edu.union.graphics.FixedPointUtils;
+import static edu.union.graphics.FixedPointUtils.ONE;
 import edu.union.graphics.Mesh;
 import edu.union.graphics.Model;
 
@@ -32,13 +33,15 @@ public class ModelViewInterpolated extends View {
 	int anim_ix;
 	int angle;
 	
-	float lightAmbient[] = new float[] { 0.2f, 0.3f, 0.6f, 1.0f };
-	float lightDiffuse[] = new float[] { 1f, 1f, 1f, 1.0f };
+	int lightAmbient[] = new int[] { FixedPointUtils.toFixed(0.2f), 
+									 FixedPointUtils.toFixed(0.3f), 
+									 FixedPointUtils.toFixed(0.6f), ONE };
+	int lightDiffuse[] = new int[] { ONE, ONE, ONE, ONE };
 
-	float matAmbient[] = new float[] { 1f, 1f, 1f, 1.0f };
-	float matDiffuse[] = new float[] { 1f, 1f, 1f, 1.0f };
+	int matAmbient[] = new int[] { ONE, ONE, ONE, ONE };
+	int matDiffuse[] = new int[] { ONE, ONE, ONE, ONE };
 
-	float[] pos = new float[] {0,20,20,1};
+	int[] pos = new int[] {0,20<<16,20<<16, ONE};
 
 	int current = 0;
 	int next = 1;
@@ -107,12 +110,12 @@ public class ModelViewInterpolated extends View {
 		gl.glEnable(GL10.GL_NORMALIZE);
 
 
-		gl.glLightfv(GL10.GL_LIGHT0, GL10.GL_AMBIENT, lightAmbient,	0);
-		gl.glLightfv(GL10.GL_LIGHT0, GL10.GL_DIFFUSE, lightDiffuse,	0);
-		gl.glLightfv(GL10.GL_LIGHT0, GL10.GL_POSITION, pos, 0);
+		gl.glLightxv(GL10.GL_LIGHT0, GL10.GL_AMBIENT, lightAmbient,	0);
+		gl.glLightxv(GL10.GL_LIGHT0, GL10.GL_DIFFUSE, lightDiffuse,	0);
+		gl.glLightxv(GL10.GL_LIGHT0, GL10.GL_POSITION, pos, 0);
 
-		gl.glMaterialfv(GL10.GL_FRONT_AND_BACK, GL10.GL_AMBIENT, matAmbient, 0);
-		gl.glMaterialfv(GL10.GL_FRONT_AND_BACK, GL10.GL_DIFFUSE, matDiffuse, 0);
+		gl.glMaterialxv(GL10.GL_FRONT_AND_BACK, GL10.GL_AMBIENT, matAmbient, 0);
+		gl.glMaterialxv(GL10.GL_FRONT_AND_BACK, GL10.GL_DIFFUSE, matDiffuse, 0);
 
 		// Pretty perspective
 		gl.glHint(GL10.GL_PERSPECTIVE_CORRECTION_HINT, GL10.GL_NICEST);
