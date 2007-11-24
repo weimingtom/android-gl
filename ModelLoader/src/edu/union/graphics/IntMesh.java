@@ -2,6 +2,10 @@
 
 import java.util.Vector;
 
+/**
+ * A Mesh which stores things in Vectors of fixed-point values.
+ * @author bburns
+ */
 public class IntMesh extends FixedPointMesh {
 	
 	Vector<int[]> vertices;

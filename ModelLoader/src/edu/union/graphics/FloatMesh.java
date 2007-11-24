@@ -5,11 +5,9 @@ import java.util.Iterator;
 import java.util.Vector;
 
 /**
- * The Mesh class represents a collection of triangles which form a polygon.
- * The Mesh maintains two sets of normals:
- *    - per face normals (accessible through getFaceNormal)
- *    - per vertex normals (accessible through getFaceNormals and getNormal)
- **/
+ * A Mesh which stores things in Vectors of floating-point values
+ * @author bburns
+ */
 public class FloatMesh extends Mesh {
 	Vector<float[]> vertices;
 	Vector<float[]> face_normals;

@@ -24,6 +24,9 @@ public abstract class Mesh {
 	String normal_file;
 	String specular_file;
 
+	/**
+	 * Constructor
+	 */
 	public Mesh() {
 		sharedVertexNormals = false;
 		sharedTextureCoords = false;
@@ -34,14 +37,25 @@ public abstract class Mesh {
 		neighbors = new Hashtable<Edge, int[]>();
 	}
 
+	/**
+	 * Set a mesh to use as a delegate for Vertex/Texture/Normal indices, saves memory across animations.
+	 * @param m
+	 */
 	public void setIndexDelegate(Mesh m) {
 		indexDelegate = m;
 	}
 
+	/**
+	 * Uses vertex indices and normal indices also.  Saves memory.
+	 * @param b If true, share vertex and normal indices, otherwise don't
+	 */
 	public void setSharedVertexNormals(boolean b) {
 		this.sharedVertexNormals = b;
 	}
 
+	/**
+	 * Calculate the neighbors of each vertex
+	 */
 	public void calculateNeighbors() {
 		neighbors.clear();
 		for (int i=0;i<faces.size();i++) {
@@ -65,19 +79,30 @@ public abstract class Mesh {
 		}
 	}
 
-	public int getNeighbor(Edge e, int other) {
+	/**
+	 * Get the neighbor of a vertex
+	 * @param e The edge
+	 * @param v The index of the vertex whose neighbor's are wanted.
+	 * @return The index of the neighboring vertex.
+	 */
+	public int getNeighbor(Edge e, int v) {
 		if (indexDelegate != null)
-			return indexDelegate.getNeighbor(e, other);
+			return indexDelegate.getNeighbor(e, v);
 
 		int[] ns = neighbors.get(e);
 		if (ns == null)
 			return -1;
-		if (ns[0] == other)
+		if (ns[0] == v)
 			return ns[1];
 		else
 			return ns[0];
 	}
 
+	/**
+	 * Get both neighboring vertices for an Edge.
+	 * @param e The edge to get neighbors for.
+	 * @return An array of the two vertex indices.
+	 */
 	public int[] getNeighbors(Edge e) {
 		if (indexDelegate != null)
 			return indexDelegate.getNeighbors(e);
@@ -97,22 +122,21 @@ public abstract class Mesh {
 	 **/
 	public abstract void calculateVertexNormals();
 
-	// Other mesh methods...
 	/**
 	 * Scale this mesh by the given factor.
-	 * \param scale The scaling factor.
+	 * @paramparam scale The scaling factor.
 	 **/
 	public abstract void scale(float scale);
 
 	/**
-	 * Scale this mesh by the given factor.
-	 * \param scale The scaling factor.
+	 * Scale this mesh by the given factor specified in fixed-point.
+	 * @param scale The scaling factor.
 	 **/
 	public abstract void scale(int scale);
 
 	/**
 	 * Get the number of faces in the mesh.
-	 * \return The number of faces.
+	 * @return The number of faces.
 	 **/
 	public int getFaceCount() {
 		if (indexDelegate != null)
@@ -122,8 +146,8 @@ public abstract class Mesh {
 
 	/**
 	 * Get a specific face in the mesh
-	 * \param ix The index of the face.
-	 * \return An array of three indices that refer to the face's vertices.
+	 * @param ix The index of the face.
+	 * @return An array of three indices that refer to the face's vertices.
 	 **/
 	public int[] getFace(int ix) {
 		if (indexDelegate != null)
@@ -133,29 +157,29 @@ public abstract class Mesh {
 
 	/**
 	 * Get a normal for a face.
-	 * \param ix The index of the face.
-	 * \return The normal for that face.
+	 * @param ix The index of the face.
+	 * @return The normal for that face.
 	 **/
 	public abstract float[] getFaceNormalf(int ix);
 
 	/**
 	 * Get a normal for a face.
-	 * \param ix The index of the face.
-	 * \return The normal for that face.
+	 * @param ix The index of the face.
+	 * @return The normal for that face.
 	 **/
 	public abstract int[] getFaceNormalx(int ix);
 
 	/**
 	 * Get a specific vertex.
-	 * \param ix The index of the vertex
-	 * \return The coordinates of the vertex.
+	 * @param ix The index of the vertex
+	 * @return The coordinates of the vertex.
 	 **/
 	public abstract float[] getVertexf(int ix);
 
 	/**
 	 * Get a specific vertex.
-	 * \param ix The index of the vertex
-	 * \return The coordinates of the vertex.
+	 * @param ix The index of the vertex
+	 * @return The coordinates of the vertex.
 	 **/
 	public abstract int[] getVertexx(int ix);
 
@@ -168,22 +192,22 @@ public abstract class Mesh {
 
 	/**
 	 * Get a normal from the normal list
-	 * \param ix The index of in the list
-	 * \return The normal at that index.
+	 * @param ix The index of in the list
+	 * @return The normal at that index.
 	 **/
 	public abstract float[] getNormalf(int ix);
 
 	/**
 	 * Get a normal from the normal list
-	 * \param ix The index of in the list
-	 * \return The normal at that index.
+	 * @param ix The index of in the list
+	 * @return The normal at that index.
 	 **/
 	public abstract int[] getNormalx(int ix);
 
 	/**
 	 * Get the normals for a face.
-	 * \param ix The index of the face.
-	 * \return The indices for the normals at each vertex in the face.
+	 * @param ix The index of the face.
+	 * @return The indices for the normals at each vertex in the face.
 	 **/
 	public int[] getFaceNormals(int ix) {
 		if (indexDelegate != null)
@@ -204,14 +228,14 @@ public abstract class Mesh {
 
 	/**
 	 * Add a normal to the normal list.
-	 * \param normal The normal to add.
+	 * @param normal The normal to add.
 	 **/
 	public abstract void addNormal(float[] normal);
 
 
 	/**
 	 * Add a normal to the normal list.
-	 * \param normal The normal to add.
+	 * @param normal The normal to add.
 	 **/
 	public abstract void addNormal(int[] normal);
 
@@ -230,21 +254,21 @@ public abstract class Mesh {
 
 	/**
 	 * Add a vertex to the mesh.
-	 * \param vertex The coordinates of the vertex.
+	 * @param vertex The coordinates of the vertex.
 	 **/
 	public abstract void addVertex(float[] vertex);
 
 	/**
 	 * Add a vertex to the mesh.
-	 * \param vertex The coordinates of the vertex.
+	 * @param vertex The coordinates of the vertex.
 	 **/
 	public abstract void addVertex(int[] vertex);
 
 
 	/**
 	 * Get the texture coordinate indices for a face.
-	 * \param ix The index of the face.
-	 * \return The specified texture indices, or null if they don't exist.
+	 * @param ix The index of the face.
+	 * @return The specified texture indices, or null if they don't exist.
 	 **/
 	public int[] getFaceTextures(int ix) {
 		if (indexDelegate != null)
@@ -260,7 +284,7 @@ public abstract class Mesh {
 
 	/**
 	 * Add a texture index for a face.
-	 * \param ixs The indices to add.
+	 * @param ixs The indices to add.
 	 **/
 	public void addTextureIndices(int[] ixs) {
 		int[] ixs2 = new int[ixs.length];
@@ -272,34 +296,34 @@ public abstract class Mesh {
 
 	/**
 	 * Add a texture coordinage
-	 * \param coord The coordinate to add.
+	 * @param coord The coordinate to add.
 	 **/
 	public abstract void addTextureCoordinate(float[] coord);
 
 	/**
 	 * Add a texture coordinage
-	 * \param coord The coordinate to add.
+	 * @param coord The coordinate to add.
 	 **/
 	public abstract void addTextureCoordinate(int[] coord);
 
 
 	/**
 	 * Get a specific texture coordinate
-	 * \param ix The index of the texture coordinate
-	 * \return The specified texture coordinate, or null if it doesn't exist.
+	 * @param ix The index of the texture coordinate
+	 * @return The specified texture coordinate, or null if it doesn't exist.
 	 **/
 	public abstract float[] getTextureCoordinatef(int ix);
 
 	/**
 	 * Get a specific texture coordinate
-	 * \param ix The index of the texture coordinate
-	 * \return The specified texture coordinate, or null if it doesn't exist.
+	 * @param ix The index of the texture coordinate
+	 * @return The specified texture coordinate, or null if it doesn't exist.
 	 **/
 	public abstract int[] getTextureCoordinatex(int ix);
 
 	/**
 	 * Add a face to the mesh.
-	 * \param face The three indices of the face's vertices
+	 * @param face The three indices of the face's vertices
 	 **/
 	public void addFace(int[] face) {
 		int[] fce = new int[3];
@@ -310,7 +334,7 @@ public abstract class Mesh {
 
 	/**
 	 * Add face normals
-	 * \param The three indices of the face's normals in the normal list
+	 * @param The three indices of the face's normals in the normal list
 	 **/
 	public void addFaceNormals(int[] normals) {
 		int[] fce = new int[3];
@@ -321,7 +345,7 @@ public abstract class Mesh {
 
 	/**
 	 * Get the name of the file that textures this mesh.
-	 * \return A file name.
+	 * @return A file name.
 	 **/
 	public String getTextureFile() {
 		return texture_file;
@@ -329,7 +353,7 @@ public abstract class Mesh {
 
 	/**
 	 * Set the name of the file that textures this mesh.
-	 * \param texture The new file name.
+	 * @param texture The new file name.
 	 **/
 	public void setTextureFile(String texture) {
 		this.texture_file = texture;
@@ -337,7 +361,7 @@ public abstract class Mesh {
 
 	/**
 	 * Get the name of the file that textures this mesh.
-	 * \return A file name.
+	 * @return A file name.
 	 **/
 	public String getNormalFile() {
 		return normal_file;
@@ -345,7 +369,7 @@ public abstract class Mesh {
 
 	/**
 	 * Set the name of the file that textures this mesh.
-	 * \param texture The new file name.
+	 * @param texture The new file name.
 	 **/
 	public void setNormalFile(String texture) {
 		this.normal_file = texture;
@@ -353,7 +377,7 @@ public abstract class Mesh {
 
 	/**
 	 * Get the name of the file that textures this mesh.
-	 * \return A file name.
+	 * @return A file name.
 	 **/
 	public String getSpecularFile() {
 		return specular_file;
@@ -361,12 +385,16 @@ public abstract class Mesh {
 
 	/**
 	 * Set the name of the file that textures this mesh.
-	 * \param texture The new file name.
+	 * @param texture The new file name.
 	 **/
 	public void setSpecularFile(String texture) {
 		this.specular_file = texture;
 	}
 
+	/**
+	 * Reorder the vertices and textures so that the are in face major order.
+	 * Makes the mesh take more memory, but aligned better for VertexBuffer operations.
+	 */
 	public void reorder() {
 		short ct = 0;
 		Vector<int[]> verticesL = new Vector<int[]>();
@@ -410,10 +438,24 @@ public abstract class Mesh {
 		sharedTextureCoords = true;
 	}
 
+	/**
+	 * Clear the vertices storage
+	 */
 	protected abstract void clearVertices();
+	
+	/**
+	 * Clear the normals storage
+	 */
 	protected abstract void clearNormals();
+	
+	/**
+	 * Clear the texture coordinate storage
+	 */
 	protected abstract void clearTexCoords();
 
+	/**
+	 * Clear the face index storage
+	 */
 	protected void clearFaces() {
 		faces.clear();
 	}

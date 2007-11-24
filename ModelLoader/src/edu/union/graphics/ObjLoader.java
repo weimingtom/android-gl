@@ -8,24 +8,39 @@ import java.io.InputStreamReader;
 import java.io.LineNumberReader;
 import java.util.StringTokenizer;
 
+/**
+ * A loader for Wavefront OBJ files.
+ * @author bburns
+ */
 public class ObjLoader extends AbstractModelLoader {
 	public static enum hand { LEFT, RIGHT};
 	protected hand coordinate_hand;
 
 	protected static final String[] suffs = new String[] {".jpg", ".png", ".gif"};
 	
+	// Constructor
 	public ObjLoader() {
 		this(hand.RIGHT);
 	}
 
+	/**
+	 * Constructor
+	 * @param h The order in which triangle vertices are specifed.
+	 */
 	public ObjLoader(hand h) {
 		this.coordinate_hand = h;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public boolean canLoad(File f) {
 		return f.getName().endsWith(".obj");
 	}
-	
+
+	/**
+	 * {@inheritDoc}
+	 */
 	public Model load(String file) 
 	throws IOException
 	{
@@ -44,12 +59,9 @@ public class ObjLoader extends AbstractModelLoader {
 		return m;
 	}
 
-	public Model load(File f) 
-	throws IOException
-	{
-		return load(new FileInputStream(f));
-	}
-
+	/**
+	 * {@inheritDoc}
+	 */
 	public Model load(InputStream in) 
 	throws IOException
 	{

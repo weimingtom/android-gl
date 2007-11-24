@@ -4,6 +4,11 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.IntBuffer;
 
+/**
+ * A Mesh which stores things in nio IntBuffers of FixedPoint values
+ * @author bburns
+ *
+ */
 public class IntBufferMesh extends FixedPointMesh {
 
 	IntBuffer vertices;

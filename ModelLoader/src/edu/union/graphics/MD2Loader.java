@@ -2,12 +2,25 @@ package edu.union.graphics;
 
 import java.io.*;
 
+/**
+ * A loader for MD2 (Quake II and others) files
+ * @author bburns
+ */
 public class MD2Loader extends AbstractModelLoader {
 	
+	/**
+	 * {@inheritDoc}
+	 */
 	public boolean canLoad(File f) {
 		return (f.getName().endsWith(".md2"));
 	}
 	
+	/**
+	 * Load a mode from a named file.  Searches for "skin.jpg" or "skin.png" in the same directory.
+	 * @param file The name of the file to load
+	 * @param scale A re-scaling value for the resulting Meshes
+	 * @return The loaded model.
+	 */
 	public Model load(String file, float scale) 
 	throws IOException
 	{
@@ -21,18 +34,36 @@ public class MD2Loader extends AbstractModelLoader {
 		}
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public Model load(InputStream in) 
 		throws IOException
 	{
 		return load(in, null);
 	}
 	
+	/**
+	 * Load from an input stream
+	 * @param in The stream to read from.
+	 * @param default_texture The file name of the default texture to use
+	 * @return The loaded model.
+	 * @throws IOException
+	 */
 	public Model load(InputStream in, String default_texture) 
 	throws IOException
 	{
 		return load(in, 1.0f, default_texture);
 	}
 
+	/**
+	 * Load from an input stream
+	 * @param in The stream to read from.
+	 * @param default_texture The file name of the default texture to use
+	 * @param scale The re-scaling factor for the loaded models
+	 * @return The loaded model.
+	 * @throws IOException
+	 */
 	@SuppressWarnings("unused")
 	public Model load(InputStream in, float scale, 
 			String default_texture) 

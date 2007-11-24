@@ -5,6 +5,10 @@ import java.util.Vector;
 
 import edu.union.graphics.ObjLoader.hand;
 
+/**
+ * An abstract class representing a Mesh which stores values as fixed-point integers
+ * @author bburns
+ */
 public abstract class FixedPointMesh extends Mesh {
 	@Override
 	public void addNormal(float[] normal) {
