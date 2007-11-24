@@ -8,12 +8,14 @@ import java.util.Vector;
  */
 public class Model {
 	Vector<Frame> frames;
+	Vector<Animation> animations;
 
 	// Constructor
 	public Model() {
 		this.frames = new Vector<Frame>();
+		this.animations = new Vector<Animation>();
 	}
-	
+
 	/**
 	 * Constructor
 	 * @param m The single mesh for a static model
@@ -21,7 +23,7 @@ public class Model {
 	public Model(Mesh m) {
 		this(new Mesh[] {m});
 	}
-	
+
 	/**
 	 * Constructor
 	 * @param m An array of Meshes to turn into Frames
@@ -30,6 +32,7 @@ public class Model {
 		this();
 		for (int i=0;i<m.length;i++)
 			addFrame(new Frame("frame"+i, m[i]));
+		this.animations.add(new Animation(this, 0, m.length, 15, "untitled"));
 	}
 
 	/**
@@ -40,6 +43,7 @@ public class Model {
 		this();
 		for (int i=0;i<frames.length;i++)
 			addFrame(frames[i]);
+		this.animations = Animation.buildAnimationsHeuristic(this, frames, 15);
 	}
 
 	/**
@@ -65,5 +69,17 @@ public class Model {
 	 */
 	public int getFrameCount() {
 		return frames.size();
+	}
+
+	public void addAnimation(Animation a) {
+		this.animations.add(a);
+	}
+
+	public Animation getAnimation(int ix) {
+		return animations.get(ix);
+	}
+
+	public int getAnimationCount() {
+		return animations.size();
 	}
 }
