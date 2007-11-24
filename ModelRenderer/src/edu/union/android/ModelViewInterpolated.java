@@ -16,8 +16,10 @@ import android.graphics.OpenGLContext;
 import android.opengl.GLU;
 import android.view.KeyEvent;
 import android.view.View;
-import edu.union.graphics.Model;
+import edu.union.graphics.Animation;
+import edu.union.graphics.FixedPointUtils;
 import edu.union.graphics.Mesh;
+import edu.union.graphics.Model;
 
 public class ModelViewInterpolated extends View {
 	private Model m;
@@ -26,8 +28,9 @@ public class ModelViewInterpolated extends View {
 
 	int tex;
 	int verts;
-	int start_frame;
-	int end_frame;
+	Animation cAnim;
+	int anim_ix;
+	int angle;
 	
 	float lightAmbient[] = new float[] { 0.2f, 0.3f, 0.6f, 1.0f };
 	float lightDiffuse[] = new float[] { 1f, 1f, 1f, 1.0f };
@@ -39,16 +42,13 @@ public class ModelViewInterpolated extends View {
 
 	int current = 0;
 	int next = 1;
-	float mix = 0;
+	int mix = 0;
 
 	private IntBuffer vertices;
 	private IntBuffer normals;
 	private IntBuffer texCoords;
 	private ShortBuffer indices;
 
-	protected static int makeFixed(float val) {
-		return (int)(val * 65536F);
-	}
 
 	protected static int loadTexture(GL10 gl, Bitmap bmp) {
 		ByteBuffer bb = ByteBuffer.allocateDirect(bmp.height()*bmp.width()*4);
@@ -74,35 +74,23 @@ public class ModelViewInterpolated extends View {
 	}
 	
 	protected void nextAnimation() {
-		start_frame = end_frame + 1;
-		if (start_frame >= m.getFrameCount())
-			start_frame = 0;
-		getEndFrame();
-	}
-	
-	protected String prefix(String str) {
-		int i;
-		for (i=0;i<str.length();i++) {
-			if (Character.isDigit(str.charAt(i)))
-				break;
+		if (m.getAnimationCount() > 0) {
+			anim_ix = (anim_ix+1)%m.getAnimationCount();
+			cAnim = m.getAnimation(anim_ix);
+			current = cAnim.getStartFrame();
+			next = current+1;
 		}
-		return str.substring(0, i);
+		else {
+			cAnim = null;
+		}
 	}
-	
-	protected void getEndFrame() {
-		end_frame = start_frame;
-		String label = prefix(m.getFrame(start_frame).getName());
-		do {
-			end_frame++;
-		} while (end_frame < m.getFrameCount() && prefix(m.getFrame(end_frame).getName()).equals(label));
-	}
-	
+		
 	public ModelViewInterpolated(Model m, Context c) {
 		super(c);
 		setFocusable(true);
 		this.m = m;
-		start_frame = 0;
-		getEndFrame();
+		anim_ix = -1;
+		nextAnimation();
 		
 		context = new OpenGLContext(OpenGLContext.DEPTH_BUFFER);
 
@@ -179,13 +167,14 @@ public class ModelViewInterpolated extends View {
 		normals.position(0);
 		texCoords.position(0);
 		indices.position(0);
-
-		animator = new ViewAnimator(this, 60);
 		
-		setFocusable(true);
+		gl.glTexCoordPointer(2,GL10.GL_FIXED,0,texCoords);
+		gl.glEnableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
+
+		animator = new ViewAnimator(this, 30);
 	}
 
-	protected void interpolate(float mix) {
+	protected void interpolate() {
 		Mesh m1 = m.getFrame(current).getMesh();
 		Mesh m2 = m.getFrame(next).getMesh();
 		int ct = 0;
@@ -193,14 +182,14 @@ public class ModelViewInterpolated extends View {
 			int[] face = m1.getFace(i);
 			int[] face_n = m1.getFaceNormals(i);
 			for (int j=0;j<3;j++) {
-				float[] n1 = m1.getNormalf(face_n[j]);
-				float[] v1 = m1.getVertexf(face[j]);
-				float[] n2 = m2.getNormalf(face_n[j]);
-				float[] v2 = m2.getVertexf(face[j]);
+				int[] n1 = m1.getNormalx(face_n[j]);
+				int[] v1 = m1.getVertexx(face[j]);
+				int[] n2 = m2.getNormalx(face_n[j]);
+				int[] v2 = m2.getVertexx(face[j]);
 
 				for (int k=0;k<3;k++) {
-					vertices.put(ct, makeFixed(v2[k]*mix+(1-mix)*v1[k]));
-					normals.put(ct, makeFixed(n2[k]*mix+(1-mix)*n1[k]));
+					vertices.put(ct, v1[k]+FixedPointUtils.multiply(v2[k]-v1[k],mix));
+					normals.put(ct, n1[k]+FixedPointUtils.multiply(n2[k]-n1[k], mix));//makeFixed(n2[k]*mix+(1-mix)*n1[k]));
 					ct++;
 				}
 			}
@@ -238,30 +227,31 @@ public class ModelViewInterpolated extends View {
 		gl.glLoadIdentity();
 		GLU.gluLookAt(gl, 0, 0, 5, 0, 0, 0, 0, 1, 0);
 		gl.glTranslatef(0,0,-5);
-		//gl.glRotatef(30.0f, 1, 0, 0);
-		//gl.glRotatef(40.0f, 0, 1, 0);
+		gl.glRotatex(-(angle<<16), 0, 0x10000, 0);
 
-		interpolate(mix);
+		interpolate();
 
 		gl.glVertexPointer(3,GL10.GL_FIXED, 0, vertices);
 		gl.glNormalPointer(GL10.GL_FIXED,0, normals);
-		gl.glTexCoordPointer(2,GL10.GL_FIXED,0,texCoords);
 		gl.glEnableClientState(GL10.GL_VERTEX_ARRAY);
 		gl.glEnableClientState(GL10.GL_NORMAL_ARRAY);
-		gl.glEnableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
-
-		//gl.glColor4f(1,0,0,1);
+		
 		gl.glBindTexture(GL10.GL_TEXTURE_2D, tex);
-		//gl.glBindTexture(GL10.GL_TEXTURE_2D, 0);
 		gl.glDrawElements(GL10.GL_TRIANGLES, verts, GL10.GL_UNSIGNED_SHORT, indices);
 
-		mix += 0.25f;
-		if (mix >= 1) {
+		mix += 0x8000;
+		if (mix >= 0x10000) {
 			current = next;
 			next++;
-			if (next > end_frame)
-				next = start_frame;
-			mix = 0.0f;
+			if (cAnim != null) {
+				if (next > cAnim.getEndFrame())
+					next = cAnim.getStartFrame();
+			}
+			else {
+				if (next > m.getFrameCount())
+					next = 0;
+			}
+			mix = 0x0;
 		}
 		context.waitGL();
 	}
@@ -270,6 +260,12 @@ public class ModelViewInterpolated extends View {
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		switch (event.getKeyCode()) {
 		case KeyEvent.KEYCODE_DPAD_RIGHT:
+			angle-=5;
+			break;
+		case KeyEvent.KEYCODE_DPAD_LEFT:
+			angle+=5;
+			break;
+		case KeyEvent.KEYCODE_DPAD_CENTER:
 			nextAnimation();
 			break;
 		}	
