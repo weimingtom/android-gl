@@ -3,13 +3,10 @@ package edu.union;
 import java.nio.FloatBuffer;
 
 import javax.microedition.khronos.opengles.GL10;
-import javax.microedition.khronos.opengles.GL11;
 
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.graphics.OpenGLContext;
 import android.opengl.GLU;
 import android.view.KeyEvent;
 
@@ -20,13 +17,14 @@ import android.view.KeyEvent;
  */
 public class GLTutorialTen extends GLTutorialBase {
 	float[] lightPos = new float[] {0,0,3,1};
-	float lightAmbient[] = new float[] { 0.2f, 0.3f, 0.6f, 1.0f };
-	float lightDiffuse[] = new float[] { 0.2f, 0.3f, 0.6f, 1.0f };
+	float lightAmbient[] = new float[] { 0.3f, 0.3f, 0.3f, 1.0f };
+	float lightDiffuse[] = new float[] { 1f, 1f, 1f, 1.0f };
 
 	float matAmbient[] = new float[] { 0.6f, 0.6f, 0.6f, 1.0f };
 	float matDiffuse[] = new float[] { 0.6f, 0.6f, 0.6f, 1.0f };
 	
 	int tex;
+	boolean fog;
 	
 	float fogColor[] = { 0.5f, 0.5f, 0.5f, 1.0f };
 	
@@ -98,14 +96,19 @@ public class GLTutorialTen extends GLTutorialBase {
 
 	FloatBuffer cubeBuff;
 	FloatBuffer texBuff;
-	FloatBuffer backBuff;
+	Bitmap bmp;
 	
 	public GLTutorialTen(Context c) {
 		super(c, 20);
 		
-		glContext = new OpenGLContext(OpenGLContext.DEPTH_BUFFER);
-		GL11 gl = (GL11)glContext.getGL();
+		cubeBuff = makeFloatBuffer(box);
+		texBuff = makeFloatBuffer(texCoords);
+		bmp = BitmapFactory.decodeResource(c.getResources(), R.drawable.icon);
 		
+		setFocusable(true);
+	}
+	
+	protected void init(GL10 gl) {
 		gl.glEnable(GL10.GL_LIGHTING);
 		gl.glEnable(GL10.GL_LIGHT0);
 		
@@ -121,9 +124,6 @@ public class GLTutorialTen extends GLTutorialBase {
 		gl.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 		gl.glClearDepthf(1.0f);
 		
-		cubeBuff = makeFloatBuffer(box);
-		texBuff = makeFloatBuffer(texCoords);
-		
 		gl.glVertexPointer(3, GL10.GL_FLOAT, 0, cubeBuff);
 		gl.glEnableClientState(GL10.GL_VERTEX_ARRAY);
 		gl.glTexCoordPointer(2, GL10.GL_FLOAT, 0, texBuff);
@@ -131,7 +131,6 @@ public class GLTutorialTen extends GLTutorialBase {
 		
 		gl.glShadeModel(GL10.GL_SMOOTH);
 		
-		Bitmap bmp = BitmapFactory.decodeResource(c.getResources(), R.drawable.block);
 		tex = loadTexture(gl, bmp);
 
 		gl.glFogf(GL10.GL_FOG_MODE, GL10.GL_EXP);;
@@ -140,28 +139,22 @@ public class GLTutorialTen extends GLTutorialBase {
 		gl.glHint(GL10.GL_FOG_HINT, GL10.GL_DONT_CARE);
 		gl.glFogf(GL10.GL_FOG_START, 1.0f);
 		gl.glFogf(GL10.GL_FOG_END, 5.0f);
-		gl.glEnable(GL10.GL_FOG);
-		
-		setFocusable(true);
+		gl.glEnable(GL10.GL_FOG);	
 	}
 	
 	float xrot = 0.0f;
 	float yrot = 0.0f;
 	
-	protected void onDraw(Canvas canvas) {
-		GL11 gl = (GL11)glContext.getGL();
-		int w = getWidth();
-		int h = getHeight();
-		
-		glContext.waitNative(canvas, this);
+	protected void drawFrame(GL10 gl) {
+		if (fog) {
+			gl.glEnable(GL10.GL_FOG);
+		}
+		else {
+			gl.glDisable(GL10.GL_FOG);
+		}
 		
 		gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
 		
-		gl.glMatrixMode(GL10.GL_PROJECTION);
-		gl.glLoadIdentity();
-		gl.glViewport(0,0,w,h);
-		GLU.gluPerspective(gl, 45.0f, ((float)w)/h, 1f, 100f);
-			
 		gl.glMatrixMode(GL10.GL_MODELVIEW);
 		gl.glLoadIdentity();
 		GLU.gluLookAt(gl, 0, 0, 3, 0, 0, 0, 0, 1, 0);
@@ -205,14 +198,11 @@ public class GLTutorialTen extends GLTutorialBase {
 	
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
-		GL10 gl = (GL10)glContext.getGL();
 		if (event.getKeyCode() == KeyEvent.KEYCODE_DPAD_LEFT) {
-			gl.glEnable(GL10.GL_FOG);
-			invalidate();
+			fog = true;
 		}
 		else if (event.getKeyCode() == KeyEvent.KEYCODE_DPAD_RIGHT) {
-			gl.glDisable(GL10.GL_FOG);
-			invalidate();
+			fog = false;
 		}	
 		return super.onKeyDown(keyCode, event);
 	}

@@ -5,7 +5,6 @@ import java.nio.FloatBuffer;
 import javax.microedition.khronos.opengles.GL10;
 
 import android.content.Context;
-import android.graphics.Canvas;
 import android.opengl.GLU;
 
 /**
@@ -14,9 +13,9 @@ import android.opengl.GLU;
  */
 public class GLTutorialThree extends GLTutorialBase {	
 	// Vertices (x,y,z) for a 2D triangle
-	float[] triangle = new float[] { 0.25f, 0.25f, 0.0f,
-									 0.75f, 0.25f, 0.0f,
-									 0.25f, 0.75f, 0.0f };
+	float[] triangle = new float[] { -0.25f, -0.25f, 0.0f,
+									 0.25f, -0.25f, 0.0f,
+									 -0.25f, 0.25f, 0.0f };
 	
 	// Colors (r,g,b,a) for each vertex
 	float[] colors = new float[] { 	1, 0, 0, 1,
@@ -29,16 +28,28 @@ public class GLTutorialThree extends GLTutorialBase {
 	
 	public GLTutorialThree(Context c) {
 		super(c);
+	
+		triangleBuff = makeFloatBuffer(triangle);
+		colorBuff = makeFloatBuffer(colors);
 		
-		GL10 gl = (GL10)glContext.getGL();
-		
+	}
+	
+	protected void init(GL10 gl) {
 		gl.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 		gl.glMatrixMode(GL10.GL_PROJECTION);
 		gl.glLoadIdentity();
 		GLU.gluOrtho2D(gl, 0.0f,1.3f,0.0f,1.0f);
+		
+		gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
+
+		gl.glShadeModel(GL10.GL_SMOOTH);
+	}
 	
-		triangleBuff = makeFloatBuffer(triangle);
-		colorBuff = makeFloatBuffer(colors);
+	protected void drawFrame(GL10 gl) {
+		gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
+		gl.glMatrixMode(GL10.GL_MODELVIEW);
+		gl.glLoadIdentity();
+		gl.glTranslatef(0,0,-1);
 		
 		// Send the vertices to the renderer
 		gl.glVertexPointer(3, GL10.GL_FLOAT, 0, triangleBuff);
@@ -47,21 +58,7 @@ public class GLTutorialThree extends GLTutorialBase {
 		// Send the colors to the renderer
 		gl.glColorPointer(4, GL10.GL_FLOAT, 0, colorBuff);
 		gl.glEnableClientState(GL10.GL_COLOR_ARRAY);
-	
-		gl.glShadeModel(GL10.GL_SMOOTH);
-	}
-	
-	protected void onDraw(Canvas canvas) {
-		GL10 gl = (GL10)glContext.getGL();
-		
-		glContext.waitNative(canvas, this);
-		gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
-		
-		gl.glMatrixMode(GL10.GL_MODELVIEW);
-		gl.glLoadIdentity();
 		
 		gl.glDrawArrays(GL10.GL_TRIANGLE_STRIP, 0, 3);
-		    
-        glContext.waitGL();
 	}
 }

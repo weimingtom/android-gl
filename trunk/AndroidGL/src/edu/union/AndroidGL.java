@@ -48,8 +48,7 @@ public class AndroidGL extends Activity {
 
     @Override
     public boolean onOptionsItemSelected(Item item) {
-        Intent i = new Intent(this, GLActivity.class);
-    	
+    	Intent i = new Intent(this, GLActivity.class);
         switch (item.getId()) {
         case FIRST_ID:
         	i = i.putExtra(GL_DRAW, GLActivity.FIRST);

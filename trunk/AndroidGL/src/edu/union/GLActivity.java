@@ -28,9 +28,9 @@ public class GLActivity extends Activity {
 	
 	protected void onCreate(Bundle icicle) {
 		super.onCreate(icicle);
-		int type = getIntent().getExtras().getInteger(AndroidGL.GL_DRAW);
+		int type = getIntent().getExtras().getInt(AndroidGL.GL_DRAW);
 		
-		View v = null;
+		View v = new GLTutorialOne(this);
 		switch (type) {
 		case FIRST:
 			v = new GLTutorialOne(this);
