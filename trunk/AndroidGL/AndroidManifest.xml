@@ -2,12 +2,13 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="edu.union">
     <application android:icon="@drawable/icon">
-        <activity class=".AndroidGL" android:label="@string/app_name">
+        <activity android:name=".AndroidGL" android:label="@string/app_name">
             <intent-filter>
-                <action android:value="android.intent.action.MAIN" />
-                <category android:value="android.intent.category.LAUNCHER" />
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity class=".GLActivity"/>
+        <activity android:name=".GLActivity"/>
+        <activity android:name=".GLView1"/>
     </application>
 </manifest> 
