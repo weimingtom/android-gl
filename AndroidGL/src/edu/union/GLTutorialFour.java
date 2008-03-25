@@ -5,7 +5,6 @@ import java.nio.FloatBuffer;
 import javax.microedition.khronos.opengles.GL10;
 
 import android.content.Context;
-import android.graphics.Canvas;
 import android.opengl.GLU;
 
 /**
@@ -35,56 +34,61 @@ public class GLTutorialFour extends GLTutorialBase {
 	
 	public GLTutorialFour(Context c) {
 		super(c, 20);
-
-		GL10 gl = (GL10)glContext.getGL();
-		
-		gl.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-		gl.glMatrixMode(GL10.GL_PROJECTION);
-		gl.glLoadIdentity();
-		GLU.gluOrtho2D(gl, 0.0f,1.3f,0.0f,1.0f);
 	
 		squareBuff = makeFloatBuffer(square);
 		triangleBuff = makeFloatBuffer(triangle);
 		colorBuff = makeFloatBuffer(colors);
 	}
 	
-	protected void onDraw(Canvas canvas) {
-		GL10 gl = (GL10)glContext.getGL();
+	protected void init(GL10 gl) {
+		// Setup background color
+		gl.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+		
+		// Setup project matrix
+		gl.glMatrixMode(GL10.GL_PROJECTION);
+		gl.glLoadIdentity();
+		GLU.gluOrtho2D(gl, 0.0f,1.3f,0.0f,1.0f);
+		
+		// Smooth shading
+		gl.glShadeModel(GL10.GL_SMOOTH);
+	}
 	
+	protected void drawFrame(GL10 gl) {
 		xrot += 1f;
 		yrot += 1f;
+			
+		// Clear screen
+		gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
 		
-		glContext.waitNative(canvas, this);
-		gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
-		
+		// Scene view matrix
+		gl.glMatrixMode(GL10.GL_MODELVIEW);
+		gl.glLoadIdentity();
+		gl.glPushMatrix();
+		gl.glTranslatef(-0.25f,0.0f,-2f);
+		gl.glRotatef(xrot, 1.0f, 0.0f, 0.0f);
+
+		// Setup triangle data and draw it.
 		gl.glVertexPointer(3, GL10.GL_FLOAT, 0, triangleBuff);
 		gl.glEnableClientState(GL10.GL_VERTEX_ARRAY);
 	
 		gl.glColorPointer(4, GL10.GL_FLOAT, 0, colorBuff);
 		gl.glEnableClientState(GL10.GL_COLOR_ARRAY);
-	
-		gl.glShadeModel(GL10.GL_SMOOTH);
-		
-		gl.glMatrixMode(GL10.GL_MODELVIEW);
-		gl.glLoadIdentity();
-		gl.glPushMatrix();
-
-		gl.glTranslatef(0.25f,0.5f,0.0f);
-		gl.glRotatef(xrot, 1.0f, 0.0f, 0.0f);
-		gl.glScalef(0.5f, 0.5f, 0.5f);
-		
+			
 		gl.glDrawArrays(GL10.GL_TRIANGLE_STRIP, 0, 3);
 		
+		// Reset to identity
 		gl.glPopMatrix();
+		
+		// Clear the color array
 		gl.glDisableClientState(GL10.GL_COLOR_ARRAY);
 		
+		// Translation to square location.
+		gl.glTranslatef(0.25f, 0.0f, -2f);
+		gl.glRotatef(yrot, 0, 1, 0);
+
+		// Setup square data & draw it
 		gl.glVertexPointer(3, GL10.GL_FLOAT, 0, squareBuff);
 		gl.glColor4f(0.25f, 0.25f, 0.75f, 1.0f);
-		gl.glTranslatef(0.75f, 0.5f, 0.0f);
-		gl.glScalef(0.5f, 0.5f, 0.5f);
-		gl.glRotatef(yrot, 0, 1, 0);
 		gl.glDrawArrays(GL10.GL_TRIANGLE_STRIP, 0, 4);
-		
-        glContext.waitGL();
 	}
 }

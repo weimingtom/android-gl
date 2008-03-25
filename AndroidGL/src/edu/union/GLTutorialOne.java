@@ -3,7 +3,6 @@ package edu.union;
 import javax.microedition.khronos.opengles.GL10;
 
 import android.content.Context;
-import android.graphics.Canvas;
 
 /**
  * http://www.zeuscmd.com/tutorials/opengles/06-Rendering.php
@@ -12,16 +11,14 @@ import android.graphics.Canvas;
 public class GLTutorialOne extends GLTutorialBase {
 	public GLTutorialOne(Context c) {
 		super(c);
-		GL10 gl = (GL10)glContext.getGL();
-		
-		gl.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 	}
 	
-	protected void onDraw(Canvas canvas) {
-		GL10 gl = (GL10)glContext.getGL();
-		
-		glContext.waitNative(canvas, this);
-		
-		gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
+	protected void init(GL10 gl) {
+		gl.glClearColor(0, 0, 0, 1);
+		gl.glHint(GL10.GL_PERSPECTIVE_CORRECTION_HINT, GL10.GL_FASTEST);
+	}
+	
+	protected void drawFrame(GL10 gl) {
+		gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
 	}
 }

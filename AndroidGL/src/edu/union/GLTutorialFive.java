@@ -5,7 +5,6 @@ import java.nio.FloatBuffer;
 import javax.microedition.khronos.opengles.GL10;
 
 import android.content.Context;
-import android.graphics.Canvas;
 import android.opengl.GLU;
 
 /**
@@ -14,9 +13,9 @@ import android.opengl.GLU;
  */
 public class GLTutorialFive extends GLTutorialBase {
 	
-	float[] triangle = new float[] { 0.25f, 0.25f, 0.0f,
-									 0.75f, 0.25f, 0.0f,
-									 0.25f, 0.75f, 0.0f };
+	float[] triangle = new float[] { -0.25f, -0.25f, 0.0f,
+									 0.25f, -0.25f, 0.0f,
+									 -0.25f, 0.25f, 0.0f };
 	
 	float[] colors = new float[] { 	1, 0, 0, 1,
 									0, 1, 0, 1,
@@ -27,42 +26,38 @@ public class GLTutorialFive extends GLTutorialBase {
 	
 	public GLTutorialFive(Context c) {
 		super(c);
-		GL10 gl = (GL10)glContext.getGL();
-		
-		gl.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+		triangleBuff = makeFloatBuffer(triangle);
+		colorBuff = makeFloatBuffer(colors);
+	}
+	
+
+	protected void init(GL10 gl) {
+		gl.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		gl.glMatrixMode(GL10.GL_PROJECTION);
 		gl.glLoadIdentity();
 		GLU.gluOrtho2D(gl, 0.0f,1.3f,0.0f,1.0f);
 	
-		triangleBuff = makeFloatBuffer(triangle);
-		colorBuff = makeFloatBuffer(colors);
-		
 		gl.glEnable(GL10.GL_DEPTH_TEST);
 		gl.glDepthFunc(GL10.GL_LEQUAL);
 		gl.glClearDepthf(1.0f);
 	
+		gl.glShadeModel(GL10.GL_SMOOTH);
 	}
 	
-
-	
-	protected void onDraw(Canvas canvas) {
-		GL10 gl = (GL10)glContext.getGL();
-		
-		glContext.waitNative(canvas, this);
+	protected void drawFrame(GL10 gl) {
 		gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
 		
+		gl.glMatrixMode(GL10.GL_MODELVIEW);
+		gl.glLoadIdentity();
+		gl.glTranslatef(0,0,-1);
+		gl.glPushMatrix();
+	
 		gl.glVertexPointer(3, GL10.GL_FLOAT, 0, triangleBuff);
 		gl.glEnableClientState(GL10.GL_VERTEX_ARRAY);
 	
 		gl.glColorPointer(4, GL10.GL_FLOAT, 0, colorBuff);
 		gl.glEnableClientState(GL10.GL_COLOR_ARRAY);
 	
-		gl.glShadeModel(GL10.GL_SMOOTH);
-		
-		gl.glMatrixMode(GL10.GL_MODELVIEW);
-		gl.glLoadIdentity();
-		
-		gl.glPushMatrix();
 		gl.glDrawArrays(GL10.GL_TRIANGLE_STRIP, 0, 3);
 		gl.glPopMatrix();
 		
@@ -77,11 +72,9 @@ public class GLTutorialFive extends GLTutorialBase {
 		gl.glDrawArrays(GL10.GL_TRIANGLE_STRIP, 0, 3);
 		gl.glPopMatrix();
 		
-		gl.glTranslatef(0.15f,0.05f,0.4f);
+		gl.glTranslatef(0.15f,0.05f,-0.4f);
 		gl.glRotatef(45,0,1,0);
 		gl.glDrawArrays(GL10.GL_TRIANGLE_STRIP, 0, 3);
 		gl.glPopMatrix();
-		
-		glContext.waitGL();
 	}
 }

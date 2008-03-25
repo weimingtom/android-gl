@@ -5,7 +5,6 @@ import java.nio.FloatBuffer;
 import javax.microedition.khronos.opengles.GL10;
 
 import android.content.Context;
-import android.graphics.Canvas;
 import android.opengl.GLU;
 import android.view.KeyEvent;
 
@@ -74,8 +73,14 @@ public class GLTutorialEleven extends GLTutorialBase {
 	public GLTutorialEleven(Context c) {
 		super(c, 20);
 
-		GL10 gl = (GL10)glContext.getGL();
+		cubeBuff = makeFloatBuffer(box);
+		floorBuff = makeFloatBuffer(floorVertices);
+				
+		setFocusable(true);
 		
+	}
+	
+	protected void init(GL10 gl) {
 		gl.glEnable(GL10.GL_LIGHTING);
 		gl.glEnable(GL10.GL_LIGHT0);
 		gl.glMaterialfv(GL10.GL_FRONT_AND_BACK, GL10.GL_AMBIENT, matAmbient, 0);
@@ -92,34 +97,17 @@ public class GLTutorialEleven extends GLTutorialBase {
 		gl.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		gl.glClearDepthf(1.0f);
 		
-		cubeBuff = makeFloatBuffer(box);
-		floorBuff = makeFloatBuffer(floorVertices);
-				
 		gl.glEnable(GL10.GL_CULL_FACE);
 		gl.glShadeModel(GL10.GL_SMOOTH);
 		
 		gl.glClearStencil(0);
-		
-		setFocusable(true);
-		
 	}
 	
 	float xrot = 0.0f;
 	float yrot = 0.0f;
 	
-	protected void onDraw(Canvas canvas) {
-		GL10 gl = (GL10)glContext.getGL();
-		int w = getWidth();
-		int h = getHeight();
-		
-		glContext.waitNative(canvas, this);
-		
+	protected void drawFrame(GL10 gl) {
 		gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT | GL10.GL_STENCIL_BUFFER_BIT);
-		
-		gl.glMatrixMode(GL10.GL_PROJECTION);
-		gl.glLoadIdentity();
-		gl.glViewport(0,0,w,h);
-		GLU.gluPerspective(gl, 45.0f, ((float)w)/h, 1f, 100f);
 			
 		gl.glMatrixMode(GL10.GL_MODELVIEW);
 		gl.glLoadIdentity();
@@ -175,8 +163,6 @@ public class GLTutorialEleven extends GLTutorialBase {
 		
 		xrot+=1.0f;
 		yrot+=0.5f;
-		
-		glContext.waitGL();
 	}
 	
 	protected void drawCube(GL10 gl) {
