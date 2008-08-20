@@ -4,7 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
-import android.view.Menu.Item;
+import android.view.MenuItem;
 
 public class AndroidGL extends Activity {
 	public static final int FIRST_ID = Menu.FIRST;
@@ -32,24 +32,24 @@ public class AndroidGL extends Activity {
     
     public boolean onCreateOptionsMenu(Menu menu) {
     	boolean res =  super.onCreateOptionsMenu(menu);
-    	menu.add(0, FIRST_ID, R.string.first);
-    	menu.add(0, SECOND_ID, R.string.second);
-    	menu.add(0, THIRD_ID, R.string.third);
-    	menu.add(0, FOURTH_ID, R.string.fourth);
-    	menu.add(0, FIFTH_ID, R.string.fifth);
-    	menu.add(0, SIXTH_ID, R.string.sixth);
-    	menu.add(0, SEVENTH_ID, R.string.seventh);
-    	menu.add(0, EIGHTH_ID, R.string.eighth);
-    	menu.add(0, NINTH_ID, R.string.ninth);
-    	menu.add(0, TENTH_ID, R.string.tenth);
-    	menu.add(0, ELEVENTH_ID, R.string.eleventh);
+    	menu.add(0, FIRST_ID, Menu.NONE, R.string.first);
+    	menu.add(0, SECOND_ID, Menu.NONE, R.string.second);
+    	menu.add(0, THIRD_ID, Menu.NONE, R.string.third);
+    	menu.add(0, FOURTH_ID, Menu.NONE, R.string.fourth);
+    	menu.add(0, FIFTH_ID, Menu.NONE, R.string.fifth);
+    	menu.add(0, SIXTH_ID, Menu.NONE, R.string.sixth);
+    	menu.add(0, SEVENTH_ID, Menu.NONE, R.string.seventh);
+    	menu.add(0, EIGHTH_ID, Menu.NONE, R.string.eighth);
+    	menu.add(0, NINTH_ID, Menu.NONE, R.string.ninth);
+    	menu.add(0, TENTH_ID, Menu.NONE, R.string.tenth);
+    	menu.add(0, ELEVENTH_ID, Menu.NONE, R.string.eleventh);
     	return res;
     }
 
     @Override
-    public boolean onOptionsItemSelected(Item item) {
+    public boolean onOptionsItemSelected(MenuItem item) {
     	Intent i = new Intent(this, GLActivity.class);
-        switch (item.getId()) {
+        switch (item.getItemId()) {
         case FIRST_ID:
         	i = i.putExtra(GL_DRAW, GLActivity.FIRST);
         	break;
@@ -87,7 +87,7 @@ public class AndroidGL extends Activity {
         	i = null;
         }
         if (i != null)
-        	startSubActivity(i, ACTIVITY_VIEW);
+        	this.startActivity(i);
     	return super.onOptionsItemSelected(item);
     }
 }

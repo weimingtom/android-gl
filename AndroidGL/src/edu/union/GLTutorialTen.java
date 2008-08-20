@@ -191,8 +191,6 @@ public class GLTutorialTen extends GLTutorialBase {
 		
 		xrot+=1f;
 		yrot+=0.5f;
-		
-		glContext.waitGL();
 	}
 	
 	
