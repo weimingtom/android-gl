@@ -137,9 +137,8 @@ public abstract class GLTutorialBase extends SurfaceView implements SurfaceHolde
 
 		for (int y = 0; y < bmp.getHeight(); y++)
 			for (int x=0;x<bmp.getWidth();x++) {
-				int pix = bmp.getPixel(bmp.getWidth()-x-1, y);
+				int pix = bmp.getPixel(x, bmp.getHeight()-y-1);
 				// Convert ARGB -> RGBA
-				@SuppressWarnings("unused")
 				byte alpha = (byte)((pix >> 24)&0xFF);
 				byte red = (byte)((pix >> 16)&0xFF);
 				byte green = (byte)((pix >> 8)&0xFF);
@@ -149,7 +148,7 @@ public abstract class GLTutorialBase extends SurfaceView implements SurfaceHolde
 				ib.put(((red&0xFF) << 24) | 
 					   ((green&0xFF) << 16) |
 					   ((blue&0xFF) << 8) |
-					   0xFF);//255-alpha);
+					   ((alpha&0xFF))); //255-alpha);
 			}
 		ib.position(0);
 		bb.position(0);
