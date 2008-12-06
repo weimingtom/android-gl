@@ -16,6 +16,7 @@ import javax.microedition.khronos.opengles.GL10;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.opengl.GLU;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -31,6 +32,75 @@ public abstract class GLTutorialBase extends SurfaceView implements SurfaceHolde
 	int height;
 	boolean resize;
 	int fps;
+	
+	float box[] = new float[] {
+			// FRONT
+			 0.5f, -0.5f,  0.5f,
+			 0.5f,  0.5f,  0.5f,
+			-0.5f, -0.5f,  0.5f,
+			-0.5f,  0.5f,  0.5f,
+			// BACK
+			-0.5f, -0.5f, -0.5f,
+			-0.5f,  0.5f, -0.5f,
+			 0.5f, -0.5f, -0.5f,
+			 0.5f,  0.5f, -0.5f,
+			// LEFT
+			-0.5f, -0.5f,  0.5f,
+			-0.5f,  0.5f,  0.5f,
+			-0.5f, -0.5f, -0.5f,
+			-0.5f,  0.5f, -0.5f,
+			// RIGHT
+			 0.5f, -0.5f, -0.5f,
+			 0.5f,  0.5f, -0.5f,
+			 0.5f, -0.5f,  0.5f,
+			 0.5f,  0.5f,  0.5f,
+			// TOP
+			-0.5f,  0.5f,  0.5f,
+			 0.5f,  0.5f,  0.5f,
+			 -0.5f,  0.5f, -0.5f,
+			 0.5f,  0.5f, -0.5f,
+			// BOTTOM
+			-0.5f, -0.5f,  0.5f,
+			-0.5f, -0.5f, -0.5f,
+			 0.5f, -0.5f,  0.5f,
+			 0.5f, -0.5f, -0.5f,
+		};
+	
+	float texCoords[] = new float[] {
+			// FRONT
+			 0.0f, 1.0f,
+			 0.0f, 0.0f,
+			 1.0f, 1.0f,
+			 1.0f, 0.0f,
+			// BACK
+			 1.0f, 0.0f,
+			 1.0f, 1.0f,
+			 0.0f, 0.0f,
+			 0.0f, 1.0f,
+			// LEFT
+			 1.0f, 0.0f,
+			 1.0f, 1.0f,
+			 0.0f, 0.0f,
+			 0.0f, 1.0f,
+			// RIGHT
+			 1.0f, 0.0f,
+			 1.0f, 1.0f,
+			 0.0f, 0.0f,
+			 0.0f, 1.0f,
+			// TOP
+			 0.0f, 0.0f,
+			 1.0f, 0.0f,
+			 0.0f, 1.0f,
+			 1.0f, 1.0f,
+			// BOTTOM
+			 1.0f, 0.0f,
+			 1.0f, 1.0f,
+			 0.0f, 0.0f,
+			 0.0f, 1.0f
+		};
+
+	FloatBuffer cubeBuff;
+	FloatBuffer texBuff;
 	
 	/**
 	 * Make a direct NIO FloatBuffer from an array of floats
@@ -59,16 +129,35 @@ public abstract class GLTutorialBase extends SurfaceView implements SurfaceHolde
 		ib.position(0);
 		return ib;
 	}
+	
+	protected static ByteBuffer makeByteBuffer(Bitmap bmp) {
+		ByteBuffer bb = ByteBuffer.allocateDirect(bmp.getHeight()*bmp.getWidth()*4);
+		bb.order(ByteOrder.BIG_ENDIAN);
+		IntBuffer ib = bb.asIntBuffer();
 
-	/**
-	 * Create a texture and send it to the graphics system
-	 * @param gl The GL object
-	 * @param bmp The bitmap of the texture
-	 * @param reverseRGB Should the RGB values be reversed?  (necessary workaround for loading .pngs...)
-	 * @return The newly created identifier for the texture.
-	 */
-	protected static int loadTexture(GL10 gl, Bitmap bmp) {
-		return loadTexture(gl, bmp, false);
+		for (int y = 0; y < bmp.getHeight(); y++)
+			for (int x=0;x<bmp.getWidth();x++) {
+				int pix = bmp.getPixel(bmp.getWidth()-x-1, y);
+				// Convert ARGB -> RGBA
+				@SuppressWarnings("unused")
+				byte alpha = (byte)((pix >> 24)&0xFF);
+				byte red = (byte)((pix >> 16)&0xFF);
+				byte green = (byte)((pix >> 8)&0xFF);
+				byte blue = (byte)((pix)&0xFF);
+								
+				// It seems like alpha is currently broken in Android...
+				ib.put(((red&0xFF) << 24) | 
+					   ((green&0xFF) << 16) |
+					   ((blue&0xFF) << 8) |
+					   0xFF);//255-alpha);
+			}
+		ib.position(0);
+		bb.position(0);
+		return bb;
+	}
+	
+	protected int loadTexture(GL10 gl, int resource) {
+		return loadTexture(gl, BitmapFactory.decodeResource(getResources(), resource));
 	}
 	
 	/**
@@ -78,37 +167,28 @@ public abstract class GLTutorialBase extends SurfaceView implements SurfaceHolde
 	 * @param reverseRGB Should the RGB values be reversed?  (necessary workaround for loading .pngs...)
 	 * @return The newly created identifier for the texture.
 	 */
-	protected static int loadTexture(GL10 gl, Bitmap bmp, boolean reverseRGB) {
-		ByteBuffer bb = ByteBuffer.allocateDirect(bmp.getHeight()*bmp.getWidth()*4);
-		bb.order(ByteOrder.BIG_ENDIAN);
-		IntBuffer ib = bb.asIntBuffer();
-
-		for (int y=bmp.getHeight()-1;y>-1;y--)
-			for (int x=0;x<bmp.getWidth();x++) {
-				int pix = bmp.getPixel(x,bmp.getHeight()-y-1);
-				// Convert ARGB -> RGBA
-				@SuppressWarnings("unused")
-				byte alpha = (byte)((pix >> 24)&0xFF);
-				byte red = (byte)((pix >> 16)&0xFF);
-				byte green = (byte)((pix >> 8)&0xFF);
-				byte blue = (byte)((pix)&0xFF);
-				
-				// It seems like alpha is currently broken in Android...
-				ib.put(red << 24 | green << 16 | blue << 8 | 0xFF);//255-alpha);
-			}
-		ib.position(0);
-		bb.position(0);
-
+	protected static int loadTexture(GL10 gl, Bitmap bmp) {
 		int[] tmp_tex = new int[1];
 
 		gl.glGenTextures(1, tmp_tex, 0);
 		int tex = tmp_tex[0];
-		gl.glBindTexture(GL10.GL_TEXTURE_2D, tex);
-		gl.glTexImage2D(GL10.GL_TEXTURE_2D, 0, GL10.GL_RGBA, bmp.getWidth(), bmp.getHeight(), 0, GL10.GL_RGBA, GL10.GL_UNSIGNED_BYTE, bb);
-		gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MIN_FILTER, GL10.GL_LINEAR);
-		gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MAG_FILTER, GL10.GL_LINEAR);
-
+		loadTexture(tex, GL10.GL_TEXTURE_2D, bmp, gl);
 		return tex;
+	}
+	
+	public void loadTexture(int texture, int type,  int resource, GL10 gl) {
+		loadTexture(texture, type, BitmapFactory.decodeResource(getResources(), resource), gl);
+	}
+	
+	static public void loadTexture(int texture, int type, Bitmap bmp, GL10 gl) {
+		loadTexture(texture, type, bmp.getWidth(), bmp.getHeight(), makeByteBuffer(bmp), gl);
+	}
+	
+	static public void loadTexture(int texture, int type, int width, int height, ByteBuffer bb, GL10 gl) {
+		gl.glBindTexture(type, texture);
+		gl.glTexImage2D(type, 0, GL10.GL_RGBA, width, height, 0, GL10.GL_RGBA, GL10.GL_UNSIGNED_BYTE, bb);
+		gl.glTexParameterf(type, GL10.GL_TEXTURE_MIN_FILTER, GL10.GL_LINEAR);
+		gl.glTexParameterf(type, GL10.GL_TEXTURE_MAG_FILTER, GL10.GL_LINEAR);
 	}
 
 	/**
@@ -130,8 +210,39 @@ public abstract class GLTutorialBase extends SurfaceView implements SurfaceHolde
 		sHolder.addCallback(this);
 		sHolder.setType(SurfaceHolder.SURFACE_TYPE_GPU);
 		this.fps = fps;
+		
+
+		cubeBuff = makeFloatBuffer(box);
+		texBuff = makeFloatBuffer(texCoords);
 	}
 
+	public void setupCube(GL10 gl) {
+		gl.glVertexPointer(3, GL10.GL_FLOAT, 0, cubeBuff);
+		gl.glEnableClientState(GL10.GL_VERTEX_ARRAY);
+		gl.glTexCoordPointer(2, GL10.GL_FLOAT, 0, texBuff);
+		gl.glEnableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
+	}
+	
+	public void drawCube(GL10 gl) {
+		gl.glColor4f(1.0f, 1, 1, 1.0f);
+		gl.glNormal3f(0,0,1);
+		gl.glDrawArrays(GL10.GL_TRIANGLE_STRIP, 0, 4);
+		gl.glNormal3f(0,0,-1);
+		gl.glDrawArrays(GL10.GL_TRIANGLE_STRIP, 4, 4);
+	
+		gl.glColor4f(1, 1.0f, 1, 1.0f);
+		gl.glNormal3f(-1,0,0);
+		gl.glDrawArrays(GL10.GL_TRIANGLE_STRIP, 8, 4);
+		gl.glNormal3f(1,0,0);
+		gl.glDrawArrays(GL10.GL_TRIANGLE_STRIP, 12, 4);
+		
+		gl.glColor4f(1, 1, 1.0f, 1.0f);
+		gl.glNormal3f(0,1,0);
+		gl.glDrawArrays(GL10.GL_TRIANGLE_STRIP, 16, 4);
+		gl.glNormal3f(0,-1,0);
+		gl.glDrawArrays(GL10.GL_TRIANGLE_STRIP, 20, 4);
+	}
+	
 	@Override
 	protected void onAttachedToWindow() {
 		if (animator != null) {
