@@ -1,12 +1,8 @@
 package edu.union;
 
-import java.nio.FloatBuffer;
-
 import javax.microedition.khronos.opengles.GL10;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.opengl.GLU;
 import android.view.KeyEvent;
 
