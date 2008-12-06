@@ -12,4 +12,5 @@
     <string name="ninth">Ninth Tutorial : Blending</string>
     <string name="tenth">Tenth Tutorial : Fog</string>
     <string name="eleventh">Eleventh Tutorial : Reflection</string>
+<string name="twelfth">Twelfth Tutorial : MultiTexture</string>
 </resources>

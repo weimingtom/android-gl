@@ -139,7 +139,16 @@ public class GLTutorialEleven extends GLTutorialBase {
 		gl.glScalef(1.0f, -1f, 1f);
 		gl.glLightfv(GL10.GL_LIGHT0, GL10.GL_POSITION, lightPos, 0);
 		gl.glCullFace(GL10.GL_FRONT);
+		
+		setupCube(gl);
+		
+		gl.glPushMatrix();
+		gl.glTranslatef(0.0f,y,-1.0f);
+		gl.glRotatef(xrot, 1, 0, 0);
+		gl.glRotatef(yrot, 0, 1, 0);
 		drawCube(gl);
+		gl.glPopMatrix();
+		
 		gl.glCullFace(GL10.GL_BACK);
 		gl.glPopMatrix();
 		gl.glLightfv(GL10.GL_LIGHT0, GL10.GL_POSITION, lightPos, 0);
@@ -158,41 +167,18 @@ public class GLTutorialEleven extends GLTutorialBase {
 		
 		gl.glDisable(GL10.GL_BLEND);
 		
-		// Draw the non-reflected cube
-		drawCube(gl);
-		
-		xrot+=1.0f;
-		yrot+=0.5f;
-	}
-	
-	protected void drawCube(GL10 gl) {
+		setupCube(gl);
 		gl.glPushMatrix();
 		gl.glTranslatef(0.0f,y,-1.0f);
 		gl.glRotatef(xrot, 1, 0, 0);
 		gl.glRotatef(yrot, 0, 1, 0);
-	
-		gl.glVertexPointer(3, GL10.GL_FLOAT, 0, cubeBuff);
-
-		gl.glColor4f(1.0f, 0, 0, 1.0f);
-		gl.glNormal3f(0,0,1);
-		gl.glDrawArrays(GL10.GL_TRIANGLE_STRIP, 0, 4);
-		gl.glNormal3f(0,0,-1);
-		gl.glDrawArrays(GL10.GL_TRIANGLE_STRIP, 4, 4);
-	
-		gl.glColor4f(0, 1.0f, 0, 1.0f);
-		gl.glNormal3f(-1,0,0);
-		gl.glDrawArrays(GL10.GL_TRIANGLE_STRIP, 8, 4);
-		gl.glNormal3f(1,0,0);
-		gl.glDrawArrays(GL10.GL_TRIANGLE_STRIP, 12, 4);
-		
-		gl.glColor4f(0, 0, 1.0f, 1.0f);
-		gl.glNormal3f(0,1,0);
-		gl.glDrawArrays(GL10.GL_TRIANGLE_STRIP, 16, 4);
-		gl.glNormal3f(0,-1,0);
-		gl.glDrawArrays(GL10.GL_TRIANGLE_STRIP, 20, 4);
+		// Draw the non-reflected cube
+		drawCube(gl);
 		gl.glPopMatrix();
+		xrot+=1.0f;
+		yrot+=0.5f;
 	}
-	
+		
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		if (event.getKeyCode() == KeyEvent.KEYCODE_DPAD_UP) {

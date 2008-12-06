@@ -28,83 +28,8 @@ public class GLTutorialTen extends GLTutorialBase {
 	
 	float fogColor[] = { 0.5f, 0.5f, 0.5f, 1.0f };
 	
-	float box[] = new float[] {
-			// FRONT
-			-0.5f, -0.5f,  0.5f,
-			 0.5f, -0.5f,  0.5f,
-			-0.5f,  0.5f,  0.5f,
-			 0.5f,  0.5f,  0.5f,
-			// BACK
-			-0.5f, -0.5f, -0.5f,
-			-0.5f,  0.5f, -0.5f,
-			 0.5f, -0.5f, -0.5f,
-			 0.5f,  0.5f, -0.5f,
-			// LEFT
-			-0.5f, -0.5f,  0.5f,
-			-0.5f,  0.5f,  0.5f,
-			-0.5f, -0.5f, -0.5f,
-			-0.5f,  0.5f, -0.5f,
-			// RIGHT
-			 0.5f, -0.5f, -0.5f,
-			 0.5f,  0.5f, -0.5f,
-			 0.5f, -0.5f,  0.5f,
-			 0.5f,  0.5f,  0.5f,
-			// TOP
-			-0.5f,  0.5f,  0.5f,
-			 0.5f,  0.5f,  0.5f,
-			 -0.5f,  0.5f, -0.5f,
-			 0.5f,  0.5f, -0.5f,
-			// BOTTOM
-			-0.5f, -0.5f,  0.5f,
-			-0.5f, -0.5f, -0.5f,
-			 0.5f, -0.5f,  0.5f,
-			 0.5f, -0.5f, -0.5f,
-		};
-	
-	float texCoords[] = new float[] {
-			// FRONT
-			 0.0f, 0.0f,
-			 1.0f, 0.0f,
-			 0.0f, 1.0f,
-			 1.0f, 1.0f,
-			// BACK
-			 1.0f, 0.0f,
-			 1.0f, 1.0f,
-			 0.0f, 0.0f,
-			 0.0f, 1.0f,
-			// LEFT
-			 1.0f, 0.0f,
-			 1.0f, 1.0f,
-			 0.0f, 0.0f,
-			 0.0f, 1.0f,
-			// RIGHT
-			 1.0f, 0.0f,
-			 1.0f, 1.0f,
-			 0.0f, 0.0f,
-			 0.0f, 1.0f,
-			// TOP
-			 0.0f, 0.0f,
-			 1.0f, 0.0f,
-			 0.0f, 1.0f,
-			 1.0f, 1.0f,
-			// BOTTOM
-			 1.0f, 0.0f,
-			 1.0f, 1.0f,
-			 0.0f, 0.0f,
-			 0.0f, 1.0f
-		};
-
-	FloatBuffer cubeBuff;
-	FloatBuffer texBuff;
-	Bitmap bmp;
-	
 	public GLTutorialTen(Context c) {
 		super(c, 20);
-		
-		cubeBuff = makeFloatBuffer(box);
-		texBuff = makeFloatBuffer(texCoords);
-		bmp = BitmapFactory.decodeResource(c.getResources(), R.drawable.icon);
-		
 		setFocusable(true);
 	}
 	
@@ -131,7 +56,7 @@ public class GLTutorialTen extends GLTutorialBase {
 		
 		gl.glShadeModel(GL10.GL_SMOOTH);
 		
-		tex = loadTexture(gl, bmp);
+		tex = loadTexture(gl, R.drawable.block);
 
 		gl.glFogf(GL10.GL_FOG_MODE, GL10.GL_EXP);;
 		gl.glFogfv(GL10.GL_FOG_COLOR, fogColor, 0);
@@ -154,6 +79,8 @@ public class GLTutorialTen extends GLTutorialBase {
 		}
 		
 		gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
+
+		setupCube(gl);
 		
 		gl.glMatrixMode(GL10.GL_MODELVIEW);
 		gl.glLoadIdentity();
@@ -168,26 +95,7 @@ public class GLTutorialTen extends GLTutorialBase {
 		gl.glMaterialfv(GL10.GL_FRONT_AND_BACK, GL10.GL_AMBIENT, matAmbient, 0);
 		gl.glMaterialfv(GL10.GL_FRONT_AND_BACK, GL10.GL_DIFFUSE, matDiffuse, 0);
 		
-		gl.glVertexPointer(3, GL10.GL_FLOAT, 0, cubeBuff);
-		gl.glEnableClientState(GL10.GL_VERTEX_ARRAY);
-		gl.glEnableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
-		gl.glTexCoordPointer(2, GL10.GL_FLOAT, 0, texBuff);
-
-		
-		gl.glNormal3f(0,0,1);
-		gl.glDrawArrays(GL10.GL_TRIANGLE_STRIP, 0, 4);
-		gl.glNormal3f(0,0,-1);
-		gl.glDrawArrays(GL10.GL_TRIANGLE_STRIP, 4, 4);
-	
-		gl.glNormal3f(-1,0,0);
-		gl.glDrawArrays(GL10.GL_TRIANGLE_STRIP, 8, 4);
-		gl.glNormal3f(1,0,0);
-		gl.glDrawArrays(GL10.GL_TRIANGLE_STRIP, 12, 4);
-		
-		gl.glNormal3f(0,1,0);
-		gl.glDrawArrays(GL10.GL_TRIANGLE_STRIP, 16, 4);
-		gl.glNormal3f(0,-1,0);
-		gl.glDrawArrays(GL10.GL_TRIANGLE_STRIP, 20, 4);
+		drawCube(gl);
 		
 		xrot+=1f;
 		yrot+=0.5f;

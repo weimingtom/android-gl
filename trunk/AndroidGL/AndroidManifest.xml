@@ -9,6 +9,5 @@
             </intent-filter>
         </activity>
         <activity android:name=".GLActivity"/>
-        <activity android:name=".GLView1"/>
     </application>
 </manifest> 
