@@ -19,6 +19,7 @@ public class GLActivity extends Activity {
 	public static final int TENTH = 9;
 	public static final int ELEVENTH = 10;
 	public static final int TWELFTH = 11;
+	public static final int THIRTEENTH = 12;
 	
     protected boolean isFullscreenOpaque() {
         // Our main window is set to translucent, but we know that we will
@@ -71,6 +72,9 @@ public class GLActivity extends Activity {
 			break;
 		case TWELFTH:
 			v = new GLTutorialTwelve(this);
+			break;
+		case THIRTEENTH:
+			v = new GLTutorialThirteen(this);
 			break;
 		}
 		setContentView(v);
