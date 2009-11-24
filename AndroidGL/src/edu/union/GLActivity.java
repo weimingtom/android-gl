@@ -2,8 +2,10 @@ package edu.union;
 
 import android.app.Activity;
 import android.graphics.PixelFormat;
+import android.opengl.GLSurfaceView;
 import android.os.Bundle;
-import android.view.View;
+import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.view.Window;
 
 public class GLActivity extends Activity {
@@ -20,27 +22,19 @@ public class GLActivity extends Activity {
 	public static final int ELEVENTH = 10;
 	public static final int TWELFTH = 11;
 	public static final int THIRTEENTH = 12;
+	public static final int FOURTEENTH = 13;
 	
-    protected boolean isFullscreenOpaque() {
-        // Our main window is set to translucent, but we know that we will
-        // fill it with opaque data. Tell the system that so it can perform
-        // some important optimizations.
-        return true;
-    }
+	GLTutorialBase v = null;
 	
 	protected void onCreate(Bundle icicle) {
 		super.onCreate(icicle);
 		int type = getIntent().getExtras().getInt(AndroidGL.GL_DRAW);
 		
-		View v = new GLTutorialOne(this);
 		switch (type) {
 		case FIRST:
 			v = new GLTutorialOne(this);
 			break;
 		case SECOND:
-			getWindow().setFormat(PixelFormat.TRANSLUCENT);
-			requestWindowFeature(Window.FEATURE_NO_TITLE);
-			
 			v = new GLTutorialTwo(this);
 			break;
 		case THIRD:
@@ -76,7 +70,25 @@ public class GLActivity extends Activity {
 		case THIRTEENTH:
 			v = new GLTutorialThirteen(this);
 			break;
+		case FOURTEENTH:
+			v = new GLTutorialFourteen(this);
+			break;
 		}
-		setContentView(v);
-	}
+		v.setRenderer(v);
+        v.setFocusable(true);
+        setContentView(v);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        v.onPause();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        v.onResume();
+    }
 }
+

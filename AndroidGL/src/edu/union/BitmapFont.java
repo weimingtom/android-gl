@@ -3,6 +3,7 @@ package edu.union;
 import java.nio.FloatBuffer;
 
 import javax.microedition.khronos.opengles.GL10;
+import javax.microedition.khronos.opengles.GL11Ext;
 
 public class BitmapFont {
 	int font_tex;
@@ -51,6 +52,7 @@ public class BitmapFont {
 		
 		gl.glEnable(GL10.GL_TEXTURE_2D); 
 		gl.glBindTexture(GL10.GL_TEXTURE_2D, font_tex); 
+		
 		gl.glEnableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
 
 		char[] chars = str.toCharArray();

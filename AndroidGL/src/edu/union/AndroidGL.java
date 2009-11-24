@@ -20,6 +20,7 @@ public class AndroidGL extends Activity {
     public static final int ELEVENTH_ID = TENTH_ID+1;
     public static final int TWELFTH_ID = ELEVENTH_ID+1;
     public static final int THIRTEENTH_ID = TWELFTH_ID+1;
+    public static final int FOURTEENTH_ID = THIRTEENTH_ID+1;
     public static final int ACTIVITY_VIEW = 0;
 	
     public static final String GL_DRAW = "GL_DRAW";
@@ -46,6 +47,7 @@ public class AndroidGL extends Activity {
     	menu.add(0, ELEVENTH_ID, Menu.NONE, R.string.eleventh);
     	menu.add(0, TWELFTH_ID, Menu.NONE, R.string.twelfth);
     	menu.add(0, THIRTEENTH_ID, Menu.NONE, R.string.thirteenth);
+    	menu.add(0, FOURTEENTH_ID, Menu.NONE, R.string.fourteenth);
     	return res;
     }
 
@@ -91,6 +93,9 @@ public class AndroidGL extends Activity {
         	break;
         case THIRTEENTH_ID:
         	i.putExtra(GL_DRAW, GLActivity.THIRTEENTH);
+        	break;
+        case FOURTEENTH_ID:
+        	i.putExtra(GL_DRAW, GLActivity.FOURTEENTH);
         	break;
         default:
         	i = null;

@@ -36,16 +36,10 @@ public class GLTutorialThree extends GLTutorialBase {
 	
 	protected void init(GL10 gl) {
 		gl.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-		gl.glMatrixMode(GL10.GL_PROJECTION);
-		gl.glLoadIdentity();
-		GLU.gluOrtho2D(gl, 0.0f,1.3f,0.0f,1.0f);
-		
-		gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
-
 		gl.glShadeModel(GL10.GL_SMOOTH);
 	}
 	
-	protected void drawFrame(GL10 gl) {
+	public void onDrawFrame(GL10 gl) {
 		gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
 		gl.glMatrixMode(GL10.GL_MODELVIEW);
 		gl.glLoadIdentity();

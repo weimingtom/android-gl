@@ -75,9 +75,6 @@ public class GLTutorialEleven extends GLTutorialBase {
 
 		cubeBuff = makeFloatBuffer(box);
 		floorBuff = makeFloatBuffer(floorVertices);
-				
-		setFocusable(true);
-		
 	}
 	
 	protected void init(GL10 gl) {
@@ -106,7 +103,7 @@ public class GLTutorialEleven extends GLTutorialBase {
 	float xrot = 0.0f;
 	float yrot = 0.0f;
 	
-	protected void drawFrame(GL10 gl) {
+	public void onDrawFrame(GL10 gl) {
 		gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT | GL10.GL_STENCIL_BUFFER_BIT);
 			
 		gl.glMatrixMode(GL10.GL_MODELVIEW);
@@ -178,7 +175,7 @@ public class GLTutorialEleven extends GLTutorialBase {
 		xrot+=1.0f;
 		yrot+=0.5f;
 	}
-		
+
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		if (event.getKeyCode() == KeyEvent.KEYCODE_DPAD_UP) {

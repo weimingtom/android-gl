@@ -26,7 +26,6 @@ public class GLTutorialTen extends GLTutorialBase {
 	
 	public GLTutorialTen(Context c) {
 		super(c, 20);
-		setFocusable(true);
 	}
 	
 	protected void init(GL10 gl) {
@@ -66,7 +65,7 @@ public class GLTutorialTen extends GLTutorialBase {
 	float xrot = 0.0f;
 	float yrot = 0.0f;
 	
-	protected void drawFrame(GL10 gl) {
+	public void onDrawFrame(GL10 gl) {
 		if (fog) {
 			gl.glEnable(GL10.GL_FOG);
 		}
@@ -96,7 +95,6 @@ public class GLTutorialTen extends GLTutorialBase {
 		xrot+=1f;
 		yrot+=0.5f;
 	}
-	
 	
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {

@@ -5,32 +5,22 @@ import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
-import javax.microedition.khronos.egl.EGL10;
-import javax.microedition.khronos.egl.EGL11;
 import javax.microedition.khronos.egl.EGLConfig;
-import javax.microedition.khronos.egl.EGLContext;
-import javax.microedition.khronos.egl.EGLDisplay;
-import javax.microedition.khronos.egl.EGLSurface;
 import javax.microedition.khronos.opengles.GL10;
 
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.opengl.GLU;
-import android.view.SurfaceHolder;
-import android.view.SurfaceView;
+import android.opengl.GLSurfaceView;
+import android.view.KeyEvent;
+import android.view.MotionEvent;
 
 
-public abstract class GLTutorialBase extends SurfaceView implements SurfaceHolder.Callback, Runnable {
-	protected EGLContext glContext;
-	protected ViewAnimator animator;
-	protected SurfaceHolder sHolder;
-	protected Thread t;
-	protected boolean running;
+public abstract class GLTutorialBase extends GLSurfaceView implements GLSurfaceView.Renderer {
+	protected Context context;
 	int width;
 	int height;
-	boolean resize;
 	int fps;
 	
 	float box[] = new float[] {
@@ -144,11 +134,10 @@ public abstract class GLTutorialBase extends SurfaceView implements SurfaceHolde
 				byte green = (byte)((pix >> 8)&0xFF);
 				byte blue = (byte)((pix)&0xFF);
 								
-				// It seems like alpha is currently broken in Android...
 				ib.put(((red&0xFF) << 24) | 
 					   ((green&0xFF) << 16) |
 					   ((blue&0xFF) << 8) |
-					   ((alpha&0xFF))); //255-alpha);
+					   ((alpha&0xFF)));
 			}
 		ib.position(0);
 		bb.position(0);
@@ -156,7 +145,7 @@ public abstract class GLTutorialBase extends SurfaceView implements SurfaceHolde
 	}
 	
 	protected int loadTexture(GL10 gl, int resource) {
-		return loadTexture(gl, BitmapFactory.decodeResource(getResources(), resource));
+		return loadTexture(gl, BitmapFactory.decodeResource(context.getResources(), resource));
 	}
 	
 	/**
@@ -176,7 +165,7 @@ public abstract class GLTutorialBase extends SurfaceView implements SurfaceHolde
 	}
 	
 	public void loadTexture(int texture, int type,  int resource, GL10 gl) {
-		loadTexture(texture, type, BitmapFactory.decodeResource(getResources(), resource), gl);
+		loadTexture(texture, type, BitmapFactory.decodeResource(context.getResources(), resource), gl);
 	}
 	
 	static public void loadTexture(int texture, int type, Bitmap bmp, GL10 gl) {
@@ -185,17 +174,17 @@ public abstract class GLTutorialBase extends SurfaceView implements SurfaceHolde
 	
 	static public void loadTexture(int texture, int type, int width, int height, ByteBuffer bb, GL10 gl) {
 		gl.glBindTexture(type, texture);
-		gl.glTexImage2D(type, 0, GL10.GL_RGBA, width, height, 0, GL10.GL_RGBA, GL10.GL_UNSIGNED_BYTE, bb);
+		gl.glTexImage2D(type, 0, GL10.GL_RGBA, width, height, 0, GL10.GL_RGBA, GL10.GL_UNSIGNED_BYTE, null);
+		gl.glTexSubImage2D(type, 0, 0, 0, width, height, GL10.GL_RGBA, GL10.GL_UNSIGNED_BYTE, bb);
 		gl.glTexParameterf(type, GL10.GL_TEXTURE_MIN_FILTER, GL10.GL_LINEAR);
 		gl.glTexParameterf(type, GL10.GL_TEXTURE_MAG_FILTER, GL10.GL_LINEAR);
 	}
 
 	/**
 	 * Constructor
-	 * @param c The View's context.
 	 */
-	public GLTutorialBase(Context c) {
-		this(c, -1);
+	public GLTutorialBase(Context context) {
+		this(context, -1);
 	}
 
 	/**
@@ -203,14 +192,11 @@ public abstract class GLTutorialBase extends SurfaceView implements SurfaceHolde
 	 * @param c The View's context
 	 * @param fps The frames per second for the animation.
 	 */
-	public GLTutorialBase(Context c, int fps) {
-		super(c);
-		sHolder = getHolder();
-		sHolder.addCallback(this);
-		sHolder.setType(SurfaceHolder.SURFACE_TYPE_GPU);
+	public GLTutorialBase(Context context, int fps) {
+		super(context);
+		this.context = context;
 		this.fps = fps;
 		
-
 		cubeBuff = makeFloatBuffer(box);
 		texBuff = makeFloatBuffer(texCoords);
 	}
@@ -242,131 +228,18 @@ public abstract class GLTutorialBase extends SurfaceView implements SurfaceHolde
 		gl.glDrawArrays(GL10.GL_TRIANGLE_STRIP, 20, 4);
 	}
 	
-	@Override
-	protected void onAttachedToWindow() {
-		if (animator != null) {
-			// If we're animated, start the animation
-			animator.start();
-		}
-		super.onAttachedToWindow();
-	}
+    public void onSurfaceCreated(GL10 gl, EGLConfig config) {    
+    }
 
-	@Override
-	protected void onDetachedFromWindow() {
-		if (animator != null) {
-			// If we're animated, stop the animation
-			animator.stop();
-		}
-		super.onDetachedFromWindow();
-	}
-
-	public void surfaceChanged(SurfaceHolder holder, int format, int width,
-			int height) {
-		synchronized (this) {
-			this.width = width;
-			this.height = height;
-			this.resize = true;
-		}
-	}
-
-	public void surfaceCreated(SurfaceHolder holder) {
-		t = new Thread(this);
-		t.start();
-	}
-
-	public void surfaceDestroyed(SurfaceHolder arg0) {
-		running = false;
-		try {
-			t.join();
-		}
-		catch (InterruptedException ex) {}
-		t = null;
-	}
-
-	public void run() {
-		// Much of this code is from GLSurfaceView in the Google API Demos.
-		// I encourage those interested to look there for documentation.
-		EGL10 egl = (EGL10)EGLContext.getEGL();
-		EGLDisplay dpy = egl.eglGetDisplay(EGL10.EGL_DEFAULT_DISPLAY);
-		
-		int[] version = new int[2];
-        egl.eglInitialize(dpy, version);
-        
-        int[] configSpec = {
-                EGL10.EGL_RED_SIZE,      5,
-                EGL10.EGL_GREEN_SIZE,    6,
-                EGL10.EGL_BLUE_SIZE,     5,
-                EGL10.EGL_DEPTH_SIZE,   16,
-                EGL10.EGL_NONE
-        };
-        
-        EGLConfig[] configs = new EGLConfig[1];
-        int[] num_config = new int[1];
-        egl.eglChooseConfig(dpy, configSpec, configs, 1, num_config);
-        EGLConfig config = configs[0];
-		
-		EGLContext context = egl.eglCreateContext(dpy, config,
-                EGL10.EGL_NO_CONTEXT, null);
-		
-		EGLSurface surface = egl.eglCreateWindowSurface(dpy, config, sHolder, null);
-		egl.eglMakeCurrent(dpy, surface, surface, context);
-			
-		GL10 gl = (GL10)context.getGL();
-
-		init(gl);
-		
-		int delta = -1;
-		if (fps > 0) {
-			delta = 1000/fps;
-		}
-		long time = System.currentTimeMillis();
-		
-		running = true;
-		while (running) {
-			int w, h;
-			synchronized(this) {
-				w = width;
-				h = height;
-			}
-			if (System.currentTimeMillis()-time < delta) {
-				try {
-					Thread.sleep(System.currentTimeMillis()-time);
-				}
-				catch (InterruptedException ex) {}
-			}
-			drawFrame(gl, w, h);
-			egl.eglSwapBuffers(dpy, surface);
-
-            if (egl.eglGetError() == EGL11.EGL_CONTEXT_LOST) {
-                Context c = getContext();
-                if (c instanceof Activity) {
-                    ((Activity)c).finish();
-                }
-            }
-            time = System.currentTimeMillis();
-		}
-        egl.eglMakeCurrent(dpy, EGL10.EGL_NO_SURFACE, EGL10.EGL_NO_SURFACE, EGL10.EGL_NO_CONTEXT);
-        egl.eglDestroySurface(dpy, surface);
-        egl.eglDestroyContext(dpy, context);
-        egl.eglTerminate(dpy);
-	}	
-
-	private void drawFrame(GL10 gl, int w, int h) {
-		if (resize) {
-			resize(gl, w, h);
-			resize = false;
-		}
-		drawFrame(gl);
-	}
-	
-	protected void resize(GL10 gl, int w, int h) {
-		gl.glMatrixMode(GL10.GL_PROJECTION);
+    public void onSurfaceChanged(GL10 gl, int w, int h) {
+    	this.width = w;
+    	this.height = h;
+    	gl.glMatrixMode(GL10.GL_PROJECTION);
 		gl.glLoadIdentity();
 		gl.glViewport(0,0,w,h);
 		GLU.gluPerspective(gl, 45.0f, ((float)w)/h, 1f, 100f);
+		init(gl);
 	}
 	
-	protected void init(GL10 gl) {}
-	
-	protected abstract void drawFrame(GL10 gl);
+	protected void init(GL10 gl) {}	
 }
