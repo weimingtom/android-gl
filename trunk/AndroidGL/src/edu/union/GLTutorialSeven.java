@@ -125,8 +125,7 @@ public class GLTutorialSeven extends GLTutorialBase {
 	float xrot = 0.0f;
 	float yrot = 0.0f;
 	
-	protected void drawFrame(GL10 gl) {
-		
+	public void onDrawFrame(GL10 gl) {
 		gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
 			
 		gl.glMatrixMode(GL10.GL_MODELVIEW);

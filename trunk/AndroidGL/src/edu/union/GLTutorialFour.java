@@ -44,16 +44,11 @@ public class GLTutorialFour extends GLTutorialBase {
 		// Setup background color
 		gl.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		
-		// Setup project matrix
-		gl.glMatrixMode(GL10.GL_PROJECTION);
-		gl.glLoadIdentity();
-		GLU.gluOrtho2D(gl, 0.0f,1.3f,0.0f,1.0f);
-		
 		// Smooth shading
 		gl.glShadeModel(GL10.GL_SMOOTH);
 	}
 	
-	protected void drawFrame(GL10 gl) {
+	public void onDrawFrame(GL10 gl) {
 		xrot += 1f;
 		yrot += 1f;
 			

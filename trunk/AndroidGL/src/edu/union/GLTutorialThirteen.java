@@ -52,7 +52,7 @@ public class GLTutorialThirteen extends GLTutorialBase {
 	float xrot = 0.0f;
 	float yrot = 0.0f;
 	
-	protected void drawFrame(GL10 gl) {
+	public void onDrawFrame(GL10 gl) {
 		gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
 		
 		gl.glMatrixMode(GL10.GL_MODELVIEW);
@@ -64,10 +64,10 @@ public class GLTutorialThirteen extends GLTutorialBase {
 		gl.glRotatef(xrot, 1, 0, 0);
 		gl.glRotatef(yrot, 0, 1, 0);
 		
-		gl.glMatrixMode(GL10.GL_MODELVIEW);
+		//gl.glMatrixMode(GL10.GL_MODELVIEW);
 		
 		gl.glActiveTexture(GL10.GL_TEXTURE0); 
-		gl.glClientActiveTexture(GL10.GL_TEXTURE0); 
+		gl.glClientActiveTexture(GL10.GL_TEXTURE0);
 		
 		font.draw(gl, "Hello");
 		yrot += 0.1;
