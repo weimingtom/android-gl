@@ -101,9 +101,13 @@ public abstract class GLTutorialBase extends GLSurfaceView implements GLSurfaceV
 		ByteBuffer bb = ByteBuffer.allocateDirect(arr.length*4);
 		bb.order(ByteOrder.nativeOrder());
 		FloatBuffer fb = bb.asFloatBuffer();
+		makeFloatBuffer(fb, arr);
+		return fb;
+	}
+
+	protected static void makeFloatBuffer(FloatBuffer fb, float[] arr) {
 		fb.put(arr);
 		fb.position(0);
-		return fb;
 	}
 
 	/**

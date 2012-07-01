@@ -18,18 +18,23 @@ public class GLTutorialFourteen extends GLTutorialBase {
 	float matDiffuse[] = new float[] { 0.6f, 0.6f, 0.6f, 1.0f };
 		
 	SphereGenerator sphere;
+	int earthTex;
 	
 	public GLTutorialFourteen(Context c) {
 		super(c, 20);
 		
-		sphere = new SphereGenerator(12, 12, 1.0f);
 	}
 
 	protected void init(GL10 gl) {
+		earthTex = loadTexture(gl, R.drawable.earth);
+		sphere = new SphereGenerator(earthTex, 12, 12, 1.0f);
+		
 		gl.glEnable(GL10.GL_LIGHTING);
 		gl.glEnable(GL10.GL_LIGHT0);
 		gl.glMaterialfv(GL10.GL_FRONT_AND_BACK, GL10.GL_AMBIENT, matAmbient, 0);
 		gl.glMaterialfv(GL10.GL_FRONT_AND_BACK, GL10.GL_DIFFUSE, matDiffuse, 0);
+		
+		gl.glEnable(GL10.GL_TEXTURE_2D);
 		
 		gl.glLightfv(GL10.GL_LIGHT0, GL10.GL_AMBIENT, lightAmbient,	0);
 		gl.glLightfv(GL10.GL_LIGHT0, GL10.GL_DIFFUSE, lightDiffuse,	0);
@@ -61,7 +66,7 @@ public class GLTutorialFourteen extends GLTutorialBase {
 	
 		sphere.draw(gl);
 		
-		xrot += 1.0f;
-		yrot += 0.5f;
+		//xrot += 1.0f;
+		//yrot += 0.5f;
 	}
 }
